@@ -4,15 +4,3 @@
 .settings
 .idea
 composer.lock
-/app
-/simplewind
-/data
-/public/plugins/
-/public/static/
-/public/themes/
-/public/upload/
-/public/.htaccess
-/public/index.php
-/public/robots.txt
-/public/router.php
-/think
