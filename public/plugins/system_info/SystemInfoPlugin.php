@@ -55,7 +55,7 @@ class SystemInfoPlugin extends Plugin
             lang('PHP_VERSION')           => phpversion(),
             lang('MYSQL_VERSION')         => $mysql,
             'ThinkPHP'                    => THINK_VERSION,
-            'ThinkCMF'                    => "{$version} <a href=\"http://www.thinkcmf.com\" target=\"_blank\">访问官网</a>",
+            'ThinkCMF'                    => "{$version} <a href=\"http://www.chouvc.com\" target=\"_blank\">访问官网</a>",
             lang('UPLOAD_MAX_FILESIZE')   => ini_get('upload_max_filesize'),
             lang('MAX_EXECUTION_TIME')    => ini_get('max_execution_time') . "s",
             //TODO 增加更多信息

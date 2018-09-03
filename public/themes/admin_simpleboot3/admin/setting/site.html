@@ -7,8 +7,8 @@
         <li><a href="#B" data-toggle="tab">{:lang('SEO_SETTING')}</a></li>
         <!--<li><a href="#C" data-toggle="tab">{:lang('URL_SETTING')}</a></li>-->
         <!--<li><a href="#E" data-toggle="tab">{:lang('COMMENT_SETTING')}</a></li>-->
-        <!-- <li><a href="#F" data-toggle="tab">用户注册设置</a></li> -->
-        <!-- <li><a href="#G" data-toggle="tab">CDN设置</a></li> -->
+        <li><a href="#F" data-toggle="tab">用户注册设置</a></li>
+        <li><a href="#G" data-toggle="tab">CDN设置</a></li>
     </ul>
     <form class="form-horizontal js-ajax-form margin-top-20" role="form" action="{:url('setting/sitePost')}"
           method="post">
@@ -24,7 +24,7 @@
                                        value="{$site_info.site_name|default=''}">
                             </div>
                         </div>
-<!--                         <div class="form-group">
+                        <div class="form-group">
                             <label for="input-admin_url_password" class="col-sm-2 control-label">
                                 后台加密码
                                 <a href="http://www.thinkcmf.com/faq.html?url=https://www.kancloud.cn/thinkcmf/faq/493509"
@@ -48,7 +48,7 @@
                                 <p class="help-block">后台登录地址：<span id="js-site-admin-url">{$site_domain}/{$admin_settings.admin_password|default='admin'}</span>
                                 </p>
                             </div>
-                        </div> -->
+                        </div>
                         <!--
                         <div class="form-group">
                             <label for="input-mobile_tpl_enabled" class="col-sm-2 control-label">{:lang('ENABLE_MOBILE_THEME')}</label>
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                         -->
-<!--                         <div class="form-group">
+                        <div class="form-group">
                             <label for="input-site_adminstyle" class="col-sm-2 control-label">{:lang('WEBSITE_ADMIN_THEME')}</label>
                             <div class="col-md-6 col-sm-10">
                                 <php>
@@ -74,7 +74,7 @@
                                     </foreach>
                                 </select>
                             </div>
-                        </div> -->
+                        </div>
                         <!--
                         <div class="form-group">
                             <label for="input-html_cache_on" class="col-sm-2 control-label">{:lang('HTML_CACHE')}</label>
@@ -157,7 +157,7 @@
                             </div>
                         </div>
                     </div>
-<!--                     <div class="tab-pane" id="F">
+                    <div class="tab-pane" id="F">
                         <div class="form-group">
                             <label for="input-banned_usernames" class="col-sm-2 control-label">用户注册验证</label>
                             <div class="col-md-6 col-sm-10">
@@ -184,8 +184,8 @@
                                 </button>
                             </div>
                         </div>
-                    </div> -->
-<!--                     <div class="tab-pane" id="G">
+                    </div>
+                    <div class="tab-pane" id="G">
                         <div class="form-group">
                             <label for="input-cdn_static_root" class="col-sm-2 control-label">静态资源cdn地址</label>
                             <div class="col-md-6 col-sm-10">
@@ -210,7 +210,7 @@
                                 </button>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </fieldset>

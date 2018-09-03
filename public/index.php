@@ -8,6 +8,7 @@
 // +----------------------------------------------------------------------
 
 // [ 入口文件 ]
+
 // 调试模式开关
 define("APP_DEBUG", true);
 
@@ -31,7 +32,7 @@ define('VENDOR_PATH', CMF_ROOT . 'simplewind/vendor/');
 define('RUNTIME_PATH', CMF_ROOT . 'data/runtime/');
 
 // 定义CMF 版本号
-define('THINKCMF_VERSION', '5.0.180626');
+define('THINKCMF_VERSION', '5.0.180901');
 
 // 加载框架基础文件
 require CMF_ROOT . 'simplewind/thinkphp/base.php';
