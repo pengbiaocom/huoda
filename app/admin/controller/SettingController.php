@@ -69,18 +69,6 @@ class SettingController extends AdminBaseController
 
         return $this->fetch();
     }
-    
-    /**
-    * 常规设置
-    * @date: 2018年9月5日 下午5:45:05
-    * @author: onep2p <324834500@qq.com>
-    * @param: variable
-    * @return:
-    */
-    public function base()
-    {
-        return $this->fetch();
-    }
 
     /**
      * 网站信息设置提交
@@ -130,6 +118,44 @@ class SettingController extends AdminBaseController
 
             $this->success("保存成功！", '');
 
+        }
+    }
+    
+    /**
+    * 常规设置
+    * @date: 2018年9月5日 下午5:45:05
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function base()
+    {
+        $baseSetting = cmf_get_option('base_setting');
+        
+        $this->assign('base_setting', $baseSetting);
+        return $this->fetch();
+    }
+    
+    /**
+    * 常规设置提交
+    * @date: 2018年9月7日 下午2:22:17
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function basePost()
+    {
+        if ($this->request->isPost()) {
+            $result = $this->validate($this->request->param(), 'SettingBase');
+            if ($result !== true) {
+                $this->error($result);
+            }
+        
+            $options = $this->request->param('options/a');
+            cmf_set_option('base_setting', $options);
+        
+            $this->success("保存成功！", '');
+        
         }
     }
 
