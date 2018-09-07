@@ -1,0 +1,96 @@
+<include file="public@header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#A" data-toggle="tab">基础设置</a></li>
+        <li><a href="#B" data-toggle="tab">关于我们</a></li>
+        <li><a href="#C" data-toggle="tab">用户协议</a></li>
+        <li><a href="#D" data-toggle="tab">价格说明</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form margin-top-20" role="form" action="{:url('setting/basePost')}"
+          method="post">
+        <fieldset>
+            <div class="tabbable">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="A">
+                        <div class="form-group">
+                            <label for="input-site-name" class="col-sm-2 control-label">出车最大送单量</label>
+                            <div class="col-md-6 col-sm-10">
+                                <input type="text" class="form-control" id="input-site-name" name="options[site_name]" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-site_icp" class="col-sm-2 control-label">出车最大运送大件量</label>
+                            <div class="col-md-6 col-sm-10">
+                                <input type="text" class="form-control" id="input-site_icp" name="options[site_icp]" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-site_icp" class="col-sm-2 control-label">公告设置</label>
+                            <div class="col-md-6 col-sm-10">
+                                <textarea class="form-control" name="options[notice]" style="height:300px;" placeholder=""></textarea>
+                            </div>
+                        </div>                        
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="1">
+                                    {:lang('SAVE')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="B">
+                        <div class="form-group">
+                            <label for="input-site_icp" class="col-sm-2 control-label">关于我们</label>
+                            <div class="col-md-6 col-sm-10">
+                                <textarea class="form-control" name="zhaiyao" style="height:450px;" placeholder=""></textarea>
+                            </div>
+                        </div> 
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="0">
+                                    {:lang('SAVE')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="C">
+                        <div class="form-group">
+                            <label for="input-site_icp" class="col-sm-2 control-label">用户协议</label>
+                            <div class="col-md-6 col-sm-10">
+                                <textarea class="form-control" name="zhaiyao" style="height:450px;" placeholder=""></textarea>
+                            </div>
+                        </div> 
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="0">
+                                    {:lang('SAVE')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="D">
+                        <div class="form-group">
+                            <label for="input-site_icp" class="col-sm-2 control-label">价格说明</label>
+                            <div class="col-md-6 col-sm-10">
+                                <textarea class="form-control" name="zhaiyao" style="height:450px;" placeholder=""></textarea>
+                            </div>
+                        </div> 
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="0">
+                                    {:lang('SAVE')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+
+</div>
+<script type="text/javascript" src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

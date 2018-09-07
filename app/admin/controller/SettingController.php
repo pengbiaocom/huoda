@@ -69,6 +69,18 @@ class SettingController extends AdminBaseController
 
         return $this->fetch();
     }
+    
+    /**
+    * 常规设置
+    * @date: 2018年9月5日 下午5:45:05
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function base()
+    {
+        return $this->fetch();
+    }
 
     /**
      * 网站信息设置提交
