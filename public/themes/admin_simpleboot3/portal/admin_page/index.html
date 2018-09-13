@@ -68,27 +68,7 @@
                     </td>
                 </tr>
             </foreach>
-            <tfoot>
-            <tr>
-                <th width="16">
-                    <label>
-                        <input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x">
-                    </label>
-                </th>
-                <th width="100">ID</th>
-                <th>标题</th>
-                <th width="80">作者</th>
-                <th width="160">发布时间</th>
-                <th>状态</th>
-                <th width="120">操作</th>
-            </tr>
-            </tfoot>
         </table>
-        <div class="table-actions">
-            <button class="btn btn-danger btn-sm js-ajax-submit" type="submit" data-action="{:url('AdminPage/delete')}"
-                    data-subcheck="true" data-msg="你确定删除吗？">{:lang('DELETE')}
-            </button>
-        </div>
         <div class="pagination">{$page}</div>
     </form>
 </div>
