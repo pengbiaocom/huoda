@@ -14,6 +14,7 @@ namespace app\admin\controller;
 use cmf\controller\AdminBaseController;
 use think\Db;
 use tree\Tree;
+use app\admin\model\AdminRegionModel;
 
 class RegionController extends AdminBaseController{
     /**
@@ -187,5 +188,19 @@ class RegionController extends AdminBaseController{
         } else {
             $this->error("删除失败！");
         }
+    }
+    
+    /**
+    * 区域排序
+    * @date: 2018年9月13日 下午4:32:49
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function listOrder()
+    {
+        $adminRegionModel = new AdminRegionModel();
+        parent::listOrders($adminRegionModel);
+        $this->success("排序更新成功！");
     }
 }
