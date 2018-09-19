@@ -164,5 +164,9 @@ return [
     //区域相关
     "REGION_NAME"                        => '区域名称',
     "ADD_SUB_REGION"                     => '添加子区域',
+    
+    //分类相关
+    "CARGO_NAME"                        => '分类名称',
+    "ADD_SUB_CARGO"                     => '添加子分类',
 ];
 

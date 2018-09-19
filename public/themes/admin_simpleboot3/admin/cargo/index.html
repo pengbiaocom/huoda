@@ -3,11 +3,10 @@
 <body>
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="{:url('Menu/index')}">后台菜单</a></li>
-        <li><a href="{:url('Menu/add')}">添加菜单</a></li>
-        <li><a href="{:url('Menu/lists')}">所有菜单</a></li>
+        <li class="active"><a href="{:url('Cargo/index')}">后台菜单</a></li>
+        <li><a href="{:url('Cargo/add')}">添加分类</a></li>
     </ul>
-    <form class="js-ajax-form" action="{:url('Menu/listOrder')}" method="post">
+    <form class="js-ajax-form" action="{:url('Cargo/listOrder')}" method="post">
         <div class="table-actions">
             <button class="btn btn-primary btn-sm js-ajax-submit" type="submit">{:lang('SORT')}</button>
         </div>
@@ -16,8 +15,7 @@
             <tr>
                 <th width="80">{:lang('SORT')}</th>
                 <th width="50">ID</th>
-                <th>{:lang('NAME')}</th>
-                <th>操作</th>
+                <th>{:lang('CARGO_NAME')}</th>
                 <th width="80">{:lang('STATUS')}</th>
                 <th width="180">{:lang('ACTIONS')}</th>
             </tr>
