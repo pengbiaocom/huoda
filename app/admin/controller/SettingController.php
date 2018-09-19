@@ -299,5 +299,50 @@ class SettingController extends AdminBaseController
         return $this->fetch();
     }
 
-
+    /**
+    * 用户反馈
+    * @date: 2018年9月19日 下午5:38:33
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function faq()
+    {
+        $content = hook_one('admin_faq_index_view');
+        
+        if (!empty($content)) {
+            return $content;
+        }
+        
+        $categories = Db::name('UserFaq')->order(["status" => "ASC", "create_time" => "DESC"])->paginate(10);
+        $page = $categories->render();
+        
+        $this->assign("page", $page);
+        $this->assign('categories', $categories);
+        return $this->fetch();
+    }
+    
+    /**
+    * 处理用户反馈
+    * @date: 2018年9月19日 下午5:38:46
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function toggle()
+    {
+        $data = $this->request->param();
+        
+        if (isset($data['ids']) && !empty($data["display"])) {
+            $ids = $this->request->param('ids/a');
+            Db::name('UserFaq')->where(['id' => ['in', $ids]])->update(['status' => 1]);
+            $this->success("更新成功！");
+        }
+        
+        if (isset($data['ids']) && !empty($data["hide"])) {
+            $ids = $this->request->param('ids/a');
+            Db::name('UserFaq')->where(['id' => ['in', $ids]])->update(['status' => 0]);
+            $this->success("更新成功！");
+        }
+    }
 }
