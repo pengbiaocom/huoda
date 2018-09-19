@@ -25,7 +25,7 @@
                     <td>{$vo.content}</td>
                     <td>{$vo.status?'已处理':'未处理'}</td>
                     <td>
-                        <a class="js-ajax-delete" href="{:url('AdminCategory/delete',['id'=>$vo.id])}">删除</a>
+                        <a class="js-ajax-delete" href="{:url('Setting/delete',['id'=>$vo.id])}">删除</a>
                         <empty name="vo.status">
                             <a class="js-ajax-dialog-btn" data-msg="您确定标记为未处理吗" href="{:url('Setting/toggle',['ids'=>$vo.id,'display'=>1])}">标记为已处理</a>
                         <else/>

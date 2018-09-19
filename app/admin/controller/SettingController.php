@@ -345,4 +345,24 @@ class SettingController extends AdminBaseController
             $this->success("更新成功！");
         }
     }
+    
+    /**
+    * 删除反馈
+    * @date: 2018年9月19日 下午5:54:49
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function delete()
+    {
+        $id = $this->request->param('id');
+        
+        $result = Db::name('UserFaq')->where(['id' => $id])->delete();
+        
+        if ($result) {
+            $this->success('删除成功!');
+        } else {
+            $this->error('删除失败');
+        }
+    }
 }
