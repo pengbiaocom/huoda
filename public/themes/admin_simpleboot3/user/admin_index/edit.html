@@ -1,0 +1,28 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('adminIndex/index')}">全站用户</a></li>
+			<li class="active"><a>编辑用户</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('adminIndex/editPost')}">
+			<div class="form-group">
+				<label for="input-user_email" class="col-sm-2 control-label"><span class="form-required">*</span>角色</label>
+				<div class="col-md-6 col-sm-10">
+					<label class="checkbox-inline"><input value="1" type="checkbox" name="role_id[]" >普通会员</label>
+					<label class="checkbox-inline"><input value="2" type="checkbox" name="role_id[]" >配送员</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<input type="hidden" name="id" value="{$id}" />
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
+					<a class="btn btn-default" href="javascript:history.back(-1);">{:lang('BACK')}</a>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>
