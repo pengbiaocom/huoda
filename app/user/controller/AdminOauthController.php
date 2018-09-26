@@ -47,6 +47,25 @@ class AdminOauthController extends AdminBaseController
         // 渲染模板输出
         return $this->fetch();
     }
+    
+    public function distribution()
+    {
+        $content = hook_one('user_admin_oauth_distribution_view');
+
+        if (!empty($content)) {
+            return $content;
+        }
+
+        $oauthUserQuery = Db::name('third_party_user');
+
+        $lists = $oauthUserQuery->field('a.*,u.user_nickname,u.sex,u.avatar')->alias('a')->join('__USER__ u', 'a.user_id = u.id')->where("status", 1)->order("create_time DESC")->paginate(10);
+        // 获取分页显示
+        $page = $lists->render();
+        $this->assign('lists', $lists);
+        $this->assign('page', $page);
+        // 渲染模板输出
+        return $this->fetch();
+    }
 
     /**
      * 后台删除第三方用户绑定
