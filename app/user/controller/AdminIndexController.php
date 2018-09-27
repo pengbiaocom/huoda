@@ -84,6 +84,22 @@ class AdminIndexController extends AdminBaseController
         // 渲染模板输出
         return $this->fetch();
     }
+    
+    /**
+    * 后台编辑用户（编辑邮箱、手机号码、用户组）
+    * @date: 2018年9月25日 下午3:53:33
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function edit()
+    {
+        $id = input('param.id', 0, 'intval');
+        $user = DB::name('user')->where(["id" => $id])->find();
+        
+        $this->assign($user);
+        return $this->fetch();
+    }
 
     /**
      * 本站用户拉黑

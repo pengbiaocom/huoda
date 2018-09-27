@@ -22,6 +22,7 @@
                 <th>ID</th>
                 <th>{:lang('USERNAME')}</th>
                 <th>{:lang('NICENAME')}</th>
+                <th>用户身份</th>
                 <th>{:lang('AVATAR')}</th>
                 <th>{:lang('EMAIL')}</th>
                 <th>手机</th>
@@ -39,9 +40,19 @@
             <foreach name="list" item="vo">
                 <tr>
                     <td>{$vo.id}</td>
-                    <td>{$vo['user_login']?$vo['user_login']:($vo['mobile']?$vo['mobile']:lang('THIRD_PARTY_USER'))}
-                    </td>
+                    <td>{$vo['user_login']?$vo['user_login']:($vo['mobile']?$vo['mobile']:lang('THIRD_PARTY_USER'))}</td>
                     <td>{$vo['user_nickname']?$vo['user_nickname']:lang('NOT_FILLED')}</td>
+                    <td>
+                    	<eq name="vo.user_type" value="1">
+                    		管理员
+                    	<else/>
+                    		<eq name="vo.user_distribution" value="1">
+                    			配送员
+                    		<else/>
+                    			会员
+                    		</eq>
+                    	</eq>
+                    </td>
                     <td><img width="25" height="25" src="{:url('user/public/avatar',array('id'=>$vo['id']))}"/></td>
                     <td>{$vo.user_email}</td>
                     <td>{$vo.mobile}</td>
@@ -51,13 +62,11 @@
                     <td>{$user_statuses[$vo['user_status']]}</td>
                     <td>
                         <neq name="vo.id" value="1">
+                            <eq name="vo.user_type" value="2"><a href="{:url('adminIndex/edit',array('id'=>$vo['id']))}">编辑</a></eq>
                             <empty name="vo.user_status">
-                                <a href="{:url('adminIndex/cancelban',array('id'=>$vo['id']))}"
-                                   class="js-ajax-dialog-btn"
-                                   data-msg="{:lang('ACTIVATE_USER_CONFIRM_MESSAGE')}">{:lang('ACTIVATE_USER')}</a>
-                                <else/>
-                                <a href="{:url('adminIndex/ban',array('id'=>$vo['id']))}" class="js-ajax-dialog-btn"
-                                   data-msg="{:lang('BLOCK_USER_CONFIRM_MESSAGE')}">{:lang('BLOCK_USER')}</a>
+                                <a href="{:url('adminIndex/cancelban',array('id'=>$vo['id']))}" class="js-ajax-dialog-btn" data-msg="{:lang('ACTIVATE_USER_CONFIRM_MESSAGE')}">{:lang('ACTIVATE_USER')}</a>
+                            <else/>
+                                <a href="{:url('adminIndex/ban',array('id'=>$vo['id']))}" class="js-ajax-dialog-btn" data-msg="{:lang('BLOCK_USER_CONFIRM_MESSAGE')}">{:lang('BLOCK_USER')}</a>
                             </empty>
                             <else/>
                             <a style="color: #ccc;">{:lang('BLOCK_USER')}</a>
