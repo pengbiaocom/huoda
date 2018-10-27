@@ -14,7 +14,7 @@ namespace app\admin\controller;
 use cmf\controller\AdminBaseController;
 use think\Db;
 use tree\Tree;
-use app\admin\model\AdminRegionModel;
+use app\admin\model\AdminCargoModel;
 
 class CargoController extends AdminBaseController{
     /**
@@ -126,8 +126,8 @@ class CargoController extends AdminBaseController{
     {
         $tree   = new Tree();
         $id     = $this->request->param("id", 0, 'intval');
-        $rs     = Db::name('AdminRegion')->where(["id" => $id])->find();
-        $result = Db::name('AdminRegion')->order(["list_order" => "ASC"])->select();
+        $rs     = Db::name('AdminCargo')->where(["id" => $id])->find();
+        $result = Db::name('AdminCargo')->order(["list_order" => "ASC"])->select();
         $array  = [];
         foreach ($result as $r) {
             $r['selected'] = $r['id'] == $rs['parent_id'] ? 'selected' : '';
@@ -152,18 +152,18 @@ class CargoController extends AdminBaseController{
     {
         if ($this->request->isPost()) {
             $id      = $this->request->param('id', 0, 'intval');
-            $oldMenu = Db::name('AdminRegion')->where(['id' => $id])->find();
+            $oldMenu = Db::name('AdminCargo')->where(['id' => $id])->find();
     
-            $result = $this->validate($this->request->param(), 'AdminRegion.edit');
+            $result = $this->validate($this->request->param(), 'AdminCargo.edit');
     
             if ($result !== true) {
                 $this->error($result);
             } else {
-                Db::name('AdminRegion')->strict(false)->field(true)->update($this->request->param());
+                Db::name('AdminCargo')->strict(false)->field(true)->update($this->request->param());
                 
-                $sessionAdminRegionIndex = session('admin_region_index');
-                $to = empty($sessionAdminRegionIndex) ? "Region/index" : $sessionAdminRegionIndex;
-                cache(null, 'admin_regions');// 删除后台菜单缓存
+                $sessionAdminRegionIndex = session('admin_cargos_index');
+                $to = empty($sessionAdminRegionIndex) ? "Cargo/index" : $sessionAdminRegionIndex;
+                cache(null, 'admin_cargos');// 删除后台菜单缓存
                 $this->success("保存成功！", url($to));
             }
         }
@@ -179,12 +179,12 @@ class CargoController extends AdminBaseController{
     public function delete()
     {
         $id    = $this->request->param("id", 0, 'intval');
-        $count = Db::name('AdminRegion')->where(["parent_id" => $id])->count();
+        $count = Db::name('AdminCargo')->where(["parent_id" => $id])->count();
         if ($count > 0) {
-            $this->error("该区域下还有子区域，无法删除！");
+            $this->error("该区域下还有子分类，无法删除！");
         }
-        if (Db::name('AdminRegion')->delete($id) !== false) {
-            $this->success("删区域成功！");
+        if (Db::name('AdminCargo')->delete($id) !== false) {
+            $this->success("删除分类成功！");
         } else {
             $this->error("删除失败！");
         }
@@ -199,8 +199,8 @@ class CargoController extends AdminBaseController{
     */
     public function listOrder()
     {
-        $adminRegionModel = new AdminRegionModel();
-        parent::listOrders($adminRegionModel);
+        $adminCargoModel = new AdminCargoModel();
+        parent::listOrders($adminCargoModel);
         $this->success("排序更新成功！");
     }
 }
