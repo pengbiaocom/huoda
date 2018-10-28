@@ -11,17 +11,51 @@ namespace api\home\controller;
 use cmf\controller\RestBaseController;
 use think\Db;
 
-class CargoController extends RestBaseController
+class OrderController extends RestBaseController
 {
-	public function index(){
-		$cargoList = Db::name("AdminCargo")->where('status', 1)->select();
+	/**
+	 * 显示资源列表
+	 */
+	public function index()
+	{
+		
+	}
 	
-		if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
-			$response = [$cargoList];
-		} else {
-			$response = $cargoList;
-		}
+	/**
+	 * 保存新建的资源
+	 */
+	public function save()
+	{
+		
+	}
 	
-		$this->success("货物分类获取成功!", $response);
+	/**
+	 * 显示指定的资源
+	 *
+	 * @param  int $id
+	 */
+	public function read($id)
+	{
+		
+	}
+	
+	/**
+	 * 保存更新的资源
+	 *
+	 * @param  int $id
+	 */
+	public function update($id)
+	{
+		
+	}
+	
+	/**
+	 * 删除指定资源
+	 *
+	 * @param  int $id
+	 */
+	public function delete($id)
+	{
+		
 	}
 }
