@@ -38,6 +38,19 @@ class AddressController extends Controller{
         return json($district);
     }
 
+    public function  get_estimated_time(Request $request){
+        $id = $request->param('id');
+
+        if(empty($id))  return json(['code'=>1,'msg'=>'缺少参数']);
+
+        $info = db("admin_region")->where(['id'=>$id])->find();
+        if($info){
+            return json(['code'=>0,'msg'=>'success','data'=>$info]);
+        }else{
+            return json(['code'=>1,'msg'=>'没有数据']);
+        }
+    }
+
     public function  get_address_byid(Request $request){
         $id = $request->param('id');
 

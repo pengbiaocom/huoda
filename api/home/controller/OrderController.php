@@ -29,7 +29,35 @@ class OrderController extends RestBaseController
 	 */
 	public function index()
 	{
-		
+		$uid = $this->request->param("uid",0);
+		$limit = $this->request->param('limit', 10, 'intval');
+		$page = $this->request->param('page', 1, 'intval');
+		$status = $this->request->param("status",0);
+
+		if(empty($uid))  return json(['code'=>1,'msg'=>'缺少参数']);
+
+		$where['uid'] = $uid;
+		if($status != 'all'){
+			$where['order_status'] = $status;
+		}
+
+		$list = db("order")
+			->where($where)
+			->order('create_time desc')
+			->limit(($page-1)*$limit, $limit)
+			->select();
+
+        if(!empty($list)){
+			foreach($list as $key=>$row){
+				$list[$key]['province'] = db("admin_region")->where("id",$row['get_region_one'])->value("name");
+				$list[$key]['city'] = db("admin_region")->where("id",$row['get_region_tow'])->value("name");
+				$list[$key]['county'] = db("admin_region")->where("id",$row['get_region_three'])->value("name");
+				$list[$key]['create_time'] = date("Y-m-d H:i:s",$row['create_time']);
+			}
+			return json(['code'=>0, 'msg'=>'调用成功', 'data'=>$list, 'paginate'=>array( 'page'=>sizeof($list) < $limit ? $page : $page+1, 'limit'=>$limit)]);
+		}else{
+			return json(['code'=>1, 'msg'=>'调用失败', 'data'=>[]]);
+		}
 	}
 	
 	/**
@@ -49,18 +77,20 @@ class OrderController extends RestBaseController
 		$data['get_phone'] = $this->request->param('get_phone','');
 		$data['cid'] = $this->request->param('cid','');
 		$data['estimate_time'] = $this->request->param('estimate_time','');
+		$data['order_total_price'] = $this->request->param('order_total_price','');
 		$data['remarks'] = $this->request->param('remarks','');
 
 
 		if(empty($data))   return json(['code'=>1,'msg'=>'缺少参数']);
 
-		$order_data['order_number'] = 'YF'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+		$data['order_number'] = 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
 		$data['order_status'] = 0;
 		$data['create_time'] = time();
 
 		$user = db("third_party_user")->where("user_id",$data['uid'])->find();
 
 		if($id = db("order")->insertGetId($data)){
+			return json(['code'=>0,'msg'=>'下单成功']);
 			$config = $this->config;
 			//统一下单参数构造
 			$unifiedorder = array(
@@ -171,11 +201,25 @@ class OrderController extends RestBaseController
 	/**
 	 * 显示指定的资源
 	 *
-	 * @param  int $id
 	 */
-	public function read($id)
+	public function read()
 	{
-		
+		$order_id = $this->request->param("id",0);
+
+		if(empty($order_id)) return json(['code'=>1,'msg'=>'缺少参数']);
+
+		$info = db("order")->where("id",$order_id)->find();
+		if(!empty($info)){
+			$info['province'] = db("admin_region")->where("id",$info['get_region_one'])->value("name");
+			$info['city'] = db("admin_region")->where("id",$info['get_region_tow'])->value("name");
+			$info['county'] = db("admin_region")->where("id",$info['get_region_three'])->value("name");
+			$info['cargo_name'] = db("admin_cargo")->where("cid",$info['get_region_three'])->value("name");
+			$info['create_time'] = date("Y-m-d H:i:s",$info['create_time']);
+
+			return json(['code'=>0,'msg'=>'success','data'=>$info]);
+		}else{
+			return json(['code'=>1,'msg'=>'没有数据']);
+		}
 	}
 	
 	/**
