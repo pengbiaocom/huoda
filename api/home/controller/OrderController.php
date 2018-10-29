@@ -41,13 +41,10 @@ class OrderController extends RestBaseController
 			$where['order_status'] = $status;
 		}
 
-		$list = db("order")
-			->where($where)
-			->order('create_time desc')
-			->limit(($page-1)*$limit, $limit)
-			->select();
+		$list = Db::name("order")->where($where)->order('create_time desc')->limit(($page-1)*$limit, $limit)->select();
 
         if(!empty($list)){
+			$list = json_decode($list,true);
 			foreach($list as $key=>$row){
 				$list[$key]['province'] = db("admin_region")->where("id",$row['get_region_one'])->value("name");
 				$list[$key]['city'] = db("admin_region")->where("id",$row['get_region_tow'])->value("name");
@@ -202,18 +199,17 @@ class OrderController extends RestBaseController
 	 * 显示指定的资源
 	 *
 	 */
-	public function read()
+	public function detail()
 	{
-		$order_id = $this->request->param("id",0);
+		$order_id = $this->request->param("id",3);
 
 		if(empty($order_id)) return json(['code'=>1,'msg'=>'缺少参数']);
-
 		$info = db("order")->where("id",$order_id)->find();
 		if(!empty($info)){
 			$info['province'] = db("admin_region")->where("id",$info['get_region_one'])->value("name");
 			$info['city'] = db("admin_region")->where("id",$info['get_region_tow'])->value("name");
 			$info['county'] = db("admin_region")->where("id",$info['get_region_three'])->value("name");
-			$info['cargo_name'] = db("admin_cargo")->where("cid",$info['get_region_three'])->value("name");
+			$info['cargo_name'] = db("admin_cargo")->where("id",$info['cid'])->value("name");
 			$info['create_time'] = date("Y-m-d H:i:s",$info['create_time']);
 
 			return json(['code'=>0,'msg'=>'success','data'=>$info]);
