@@ -100,6 +100,30 @@ class AdminIndexController extends AdminBaseController
         $this->assign($user);
         return $this->fetch();
     }
+    
+    /**
+    * 函数用途描述
+    * @date: 2018年10月29日 下午3:42:54
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function editPost()
+    {
+        $id = $this->request->param('id', 0, 'intval');
+        $role = $this->request->param('role_id', 0, 'intval');
+        
+        if ($id) {
+            $result = Db::name("user")->where(["id" => $id])->setField('user_distribution', $role);
+            if ($result) {
+                $this->success("会员分组成功！", "adminIndex/index");
+            } else {
+                $this->error('会员分组失败,会员不存在,或者是管理员！');
+            }
+        } else {
+            $this->error('数据传入失败！');
+        }
+    }
 
     /**
      * 本站用户拉黑
