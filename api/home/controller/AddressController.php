@@ -22,6 +22,7 @@ class AddressController extends RestBaseController
 
 		switch ($type) {
 		    case 0:
+		        $where['order_status'] = array('GT', 0);
 		        $where['uid'] = $uid;
 		        $data = Db::name("order")->where($where)->order('create_time desc')->find();
 		    break;
@@ -31,11 +32,16 @@ class AddressController extends RestBaseController
 		        $data = Db::name("order")->where($where)->order('create_time desc')->select();
 		    break;
 		    default:
+		        $where['order_status'] = array('GT', 0);
 		        $where['uid'] = $uid;
 		        $data = Db::name("order")->where($where)->order('create_time desc')->find();
 		    break;
 		}
-		
+        if(!empty($data)){
+			$data['province'] = db("admin_region")->where("id",$data['get_region_one'])->value("name");
+			$data['city'] = db("admin_region")->where("id",$data['get_region_tow'])->value("name");
+			$data['county'] = db("admin_region")->where("id",$data['get_region_three'])->value("name");
+		}
 		if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
 		    $response = [$data];
 		} else {
