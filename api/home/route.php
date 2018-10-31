@@ -6,3 +6,4 @@ Route::resource('home/slides', 'home/Slides');
 Route::resource('home/cargo', 'home/Cargo');
 Route::resource('home/region', 'home/Region');
 Route::resource('home/address', 'home/Address');
+Route::resource('home/geo', 'home/Geo');
