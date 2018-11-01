@@ -18,6 +18,10 @@ class GeoController extends RestBaseController
     public function read()
     {
         $address = $this->request->param('address');
+        $id =  $this->request->param('region');
+
+        $info = db("admin_region")->where(['id'=>$id])->find();
+        $response['info'] = $info;
         $url = "http://restapi.amap.com/v3/geocode/geo?key=389880a06e3f893ea46036f030c94700&s=rsv3&city=510100&address=".urldecode($address);
         
         $ch = curl_init();
@@ -35,23 +39,28 @@ class GeoController extends RestBaseController
         curl_close($ch);
         
         $location = json_decode($rs, true);
-        
+
         if($location['status'] == 1){
             /* 计算距离和时间 */
-            $geo = $location['geocodes'][0]['location'];
-            $distance = $this->distance($location['geocodes'][0]['location']);
-            
-            if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
-                $response = [['geo'=>$geo, 'distance'=>$distance]];
-            } else {
-                $response = ['geo'=>$geo, 'distance'=>$distance];
+            if(!empty($location['geocodes'])){
+                $geo = $location['geocodes'][0]['location'];
+                $geo = explode(',',$geo);
+                $location['lat'] = $geo[1];
+                $location['lng'] = $geo[0];
+                $distance = $this->distance($location['geocodes'][0]['location']);
+                $response['geo'] = $geo;
+                $response['distance'] = $distance;
+            }else{
+                $response['geo'] = [];
+                $response['distance'] = [];
             }
-            
-            $this->success("坐标及距离获取成功!", $response);
-        } else {
-            $response = $location['geocodes'][0]['location'];
-            $this->error('坐标获取失败！', []);
+
+        }else{
+            $response['geo'] = [];
+            $response['distance'] = [];
         }
+        $this->success("获取成功!", $response);
+
     }
     
     private function distance($location)
