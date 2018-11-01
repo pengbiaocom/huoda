@@ -37,16 +37,41 @@ class GeoController extends RestBaseController
         $location = json_decode($rs, true);
         
         if($location['status'] == 1){
+            /* 计算距离和时间 */
+            $geo = $location['geocodes'][0]['location'];
+            $distance = $this->distance($location['geocodes'][0]['location']);
+            
             if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
-                $response = [$location['geocodes'][0]['location']];
+                $response = [['geo'=>$geo, 'distance'=>$distance]];
             } else {
-                $response = $location['geocodes'][0]['location'];
+                $response = ['geo'=>$geo, 'distance'=>$distance];
             }
             
-            $this->success("坐标获取成功!", $response);
+            $this->success("坐标及距离获取成功!", $response);
         } else {
             $response = $location['geocodes'][0]['location'];
             $this->error('坐标获取失败！', []);
         }
+    }
+    
+    private function distance($location)
+    {
+        $startLng = '104.025652';
+        $startLat = '30.630897';
+        list($endLng,$endLat) = explode(',', $location);
+        
+
+        $earthRadius = 6367000; //approximate radius of earth in meters
+        $startLat = ($startLat * pi() ) / 180;
+        $startLng = ($startLng * pi() ) / 180;
+        $endLat = ($endLat * pi() ) / 180;
+        $endLng = ($endLng * pi() ) / 180;
+        $calcLongitude = $endLng - $startLng;
+        $calcLatitude = $endLat - $startLat;
+        $stepOne = pow(sin($calcLatitude / 2), 2) + cos($startLat) * cos($endLat) * pow(sin($calcLongitude / 2), 2);
+        $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+        $calculatedDistance = round($earthRadius * $stepTwo / 350) + 30;
+        
+        return $calculatedDistance;
     }
 }

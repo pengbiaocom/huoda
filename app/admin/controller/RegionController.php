@@ -58,7 +58,6 @@ class RegionController extends AdminBaseController{
                         <td style='padding-left:20px;'><input name='list_orders[\$id]' type='text' size='3' value='\$list_order' class='input input-order'></td>
                         <td>\$id</td>
                         <td>\$spacer\$name</td>
-                        <td>\$estimated_time</td>
                         <td>\$distribution_price</td>
                         <td>\$status</td>
                         <td>\$str_manage</td>
