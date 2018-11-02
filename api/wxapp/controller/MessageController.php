@@ -58,6 +58,39 @@ class MessageController extends RestBaseController{
         $this->success('ok', ['list' => $articles,'paginate'=>array('page'=>sizeof($articles) < $limit ? $page : $page+1, 'limit'=>$limit)]);
     }
 
+    public function  problem(){
+        $categoryId = $this->request->param('category_id', 1, 'intval');
+
+        $limit = $this->request->param('limit', 10, 'intval');
+        $page = $this->request->param('page', 1, 'intval');
+
+        $portalCategoryModel = new  PortalCategoryModel();
+
+        $findCategory = $portalCategoryModel->where('id', $categoryId)->find();
+
+        //分类是否存在
+        if (empty($findCategory)) {
+            $this->error('分类不存在！');
+        }
+
+        $param = $this->request->param();
+
+        if(empty($param['order'])){
+            $param['order']='-post.published_time';
+        }
+
+        $articles = $portalCategoryModel->paramsFilter($param, $findCategory->articles()->alias('post'))->select();
+
+        if (!empty($param['relation'])) {
+            if (count($articles) > 0) {
+                $articles->load('user');
+                $articles->append(['user']);
+            }
+        }
+
+        $this->success('ok', ['list' => $articles,'paginate'=>array('page'=>sizeof($articles) < $limit ? $page : $page+1, 'limit'=>$limit)]);
+    }
+
     /**
      * 获取指定的文章
      * @param int $id

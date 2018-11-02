@@ -25,23 +25,37 @@ class AddressController extends RestBaseController
 		        $where['order_status'] = array('GT', 0);
 		        $where['uid'] = $uid;
 		        $data = Db::name("order")->where($where)->order('create_time desc')->find();
+				if(!empty($data)){
+					$data['province'] = db("admin_region")->where("id",$data['get_region_one'])->value("name");
+					$data['city'] = db("admin_region")->where("id",$data['get_region_tow'])->value("name");
+					$data['county'] = db("admin_region")->where("id",$data['get_region_three'])->value("name");
+				}
 		    break;
 		    case 1:
 		        $where['order_status'] = array('GT', 0);
 		        if($uid > 0) $where['uid'] = $uid;
 		        $data = Db::name("order")->where($where)->order('create_time desc')->select();
+				if(!empty($data)){
+					$data = json_decode($data,true);
+					foreach($data as $key=>$row){
+						$data[$key]['province'] = db("admin_region")->where("id",$row['get_region_one'])->value("name");
+						$data[$key]['city'] = db("admin_region")->where("id",$row['get_region_tow'])->value("name");
+						$data[$key]['county'] = db("admin_region")->where("id",$row['get_region_three'])->value("name");
+					}
+				}
 		    break;
 		    default:
 		        $where['order_status'] = array('GT', 0);
 		        $where['uid'] = $uid;
 		        $data = Db::name("order")->where($where)->order('create_time desc')->find();
+				if(!empty($data)){
+					$data['province'] = db("admin_region")->where("id",$data['get_region_one'])->value("name");
+					$data['city'] = db("admin_region")->where("id",$data['get_region_tow'])->value("name");
+					$data['county'] = db("admin_region")->where("id",$data['get_region_three'])->value("name");
+				}
 		    break;
 		}
-        if(!empty($data)){
-			$data['province'] = db("admin_region")->where("id",$data['get_region_one'])->value("name");
-			$data['city'] = db("admin_region")->where("id",$data['get_region_tow'])->value("name");
-			$data['county'] = db("admin_region")->where("id",$data['get_region_three'])->value("name");
-		}
+
 		if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
 		    $response = [$data];
 		} else {
