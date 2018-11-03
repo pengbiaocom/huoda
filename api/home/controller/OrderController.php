@@ -96,7 +96,7 @@ class OrderController extends RestBaseController
 				'nonce_str'		=> self::getNonceStr(),
 				'body'			=> '货达',
 				'out_trade_no'	=> 'YF'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
-				'total_fee'		=> $data['price'] * 100,
+				'total_fee'		=> $data['order_total_price'] * 100,
 				'spbill_create_ip'	=> get_client_ip(),
 				'notify_url'	=> 'https://huoda.chouvc.com/api/home/order/notify',
 				'trade_type'	=> 'JSAPI',
@@ -129,6 +129,69 @@ class OrderController extends RestBaseController
 			}
 		}else{
 			return json(['code'=>1,'msg'=>'服务器繁忙']);
+		}
+	}
+
+	/**
+	 * 预支付请求接口(POST)
+	 * @param string $openid 	openid
+	 * @param string $body 		商品简单描述
+	 * @param string $order_sn  订单编号
+	 * @param string $total_fee 金额
+	 * @return  json的数据
+	 */
+	public function prepay(){
+		$config = $this->config;
+		$uid = $this->request->param('uid', '', 'intval');
+		$out_trade_no = $this->request->param('order_number', '', 'op_t');
+
+		//查询数据，进行预支付
+		$order = db("order")->where('uid', $uid)->where('order_number', $out_trade_no)->find();
+
+		$user = db("third_party_user")->where("user_id",$uid)->find();
+
+		//统一下单参数构造
+		$unifiedorder = array(
+			'appid'			=> $config['appid'],
+			'mch_id'		=> $config['pay_mchid'],
+			'nonce_str'		=> self::getNonceStr(),
+			'body'			=> '货达',
+			'out_trade_no'	=> 'YF'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
+			'total_fee'		=> $order['order_total_price'] * 100,
+			'spbill_create_ip'	=> get_client_ip(),
+			'notify_url'	=> 'https://huoda.chouvc.com/api/home/order/notify',
+			'trade_type'	=> 'JSAPI',
+			'openid'		=> $user['openid']
+		);
+
+		//更新数据库单号
+		db("order")->where(['id'=>$order['id']])->update(['order_number'=>$unifiedorder['out_trade_no']]);
+
+
+		$unifiedorder['sign'] = self::makeSign($unifiedorder);
+		//请求数据
+		$xmldata = self::array2xml($unifiedorder);
+		$url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+		$res = self::curl_post_ssl($url, $xmldata);
+		if(!$res){
+			self::return_err("Can't connect the server");
+		}
+		// 这句file_put_contents是用来查看服务器返回的结果 测试完可以删除了
+		//file_put_contents(APP_ROOT.'/Statics/log1.txt',$res,FILE_APPEND);
+
+		$content = self::xml2array($res);
+
+		if(strval($content['result_code']) == 'FAIL'){
+			self::return_err(strval($content['err_code_des']));
+		}
+		if(strval($content['return_code']) == 'FAIL'){
+			self::return_err(strval($content['return_msg']));
+		}
+
+		if(!empty($content['prepay_id'])){
+			return self::pay($content['prepay_id'],$unifiedorder['out_trade_no']);
+		}else{
+			return json(['code'=>0,'msg'=>'发起支付失败']);
 		}
 	}
 
