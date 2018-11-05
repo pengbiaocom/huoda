@@ -60,20 +60,20 @@ class PublicController extends RestBaseController
             }
         }
 
-
         $response = cmf_curl_get("https://api.weixin.qq.com/sns/jscode2session?appid=$appId&secret=$appSecret&js_code=$code&grant_type=authorization_code");
-
         $response = json_decode($response, true);
-        if (!empty($response['errcode'])) {
+        if(!isset($response['session_key']) && empty($response['session_key'])){
             $this->error('操作失败!');
         }
+//        if (isset($response['errcode']) && !empty($response['errcode'])) {
+//            $this->error('操作失败!');
+//        }
 
         $openid     = $response['openid'];
         $sessionKey = $response['session_key'];
 
         $pc      = new WXBizDataCrypt($appId, $sessionKey);
-        $errCode = $pc->decryptData($data['encrypted_data'], $data['iv'], $wxUserData);
-
+        $errCode = $pc->decryptDatas($data['encrypted_data'], $data['iv'], $wxUserData);
         if ($errCode != 0) {
             $this->error('操作失败!');
         }
@@ -85,7 +85,7 @@ class PublicController extends RestBaseController
 
         $currentTime = time();
         $ip          = $this->request->ip(0, true);
-
+        $wxUserData = json_decode($wxUserData, true);
         $wxUserData['sessionKey'] = $sessionKey;
         unset($wxUserData['watermark']);
 
@@ -99,7 +99,6 @@ class PublicController extends RestBaseController
                 'login_times'     => Db::raw('login_times+1'),
                 'more'            => json_encode($wxUserData)
             ];
-
             if (isset($wxUserData['unionId'])) {
                 $userData['union_id'] = $wxUserData['unionId'];
             }

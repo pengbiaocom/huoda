@@ -7,4 +7,3 @@ Route::resource('home/cargo', 'home/Cargo');
 Route::resource('home/region', 'home/Region');
 Route::resource('home/address', 'home/Address');
 Route::resource('home/geo', 'home/Geo');
-Route::resource('home/faq', 'home/Faq');

@@ -95,6 +95,10 @@ class ComposerStaticInit929fb365b9981d29459d58f676689cf7
             array (
                 0 => __DIR__ . '/..' . '/phpoffice/phpexcel/Classes',
             ),
+            'Phpml' =>
+            array (
+                0 => __DIR__ . '/..' . '/php-ai/php-ml/src',
+            ),
         ),
         'H' => 
         array (

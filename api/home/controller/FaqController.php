@@ -15,10 +15,12 @@ use think\Db;
 
 class FaqController extends RestBaseController
 {
-    public function save()
+    public function read()
     {
         $uid = $this->request->param('uid', 0, 'intval');
         $content = $this->request->param('content');
+
+        if(empty($content))  $this->error("请输入反馈信息!");
         
         $faq['uid'] = $uid;
         $faq['content'] = $content;
@@ -31,6 +33,6 @@ class FaqController extends RestBaseController
             $this->error("反馈失败,请重试!");
         }
         
-        $this->success("意见意见反馈成功,请等待管理员与您联系!");        
+        $this->success("反馈成功,请等待管理员与您联系!");
     }
 }

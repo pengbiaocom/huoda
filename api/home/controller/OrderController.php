@@ -76,7 +76,9 @@ class OrderController extends RestBaseController
 		$data['estimate_time'] = $this->request->param('estimate_time','');
 		$data['order_total_price'] = $this->request->param('order_total_price','');
 		$data['remarks'] = $this->request->param('remarks','');
-
+		$data['radio_value'] = $this->request->param("radio_value",'');
+        $data['model_value'] = $this->request->param("model_value",'');
+		$data['return_goods'] = $this->request->param("return_goods",0);
 
 		if(empty($data))   return json(['code'=>1,'msg'=>'缺少参数']);
 

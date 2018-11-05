@@ -83,23 +83,4 @@ class GeoController extends RestBaseController
         
         return $calculatedDistance;
     }
-
-    public function save()
-    {
-        $uid = $this->request->param('uid', 0, 'intval');
-        $content = $this->request->param('content');
-
-        $faq['uid'] = $uid;
-        $faq['content'] = $content;
-        $faq['status'] = 0;
-        $faq['create_time'] = time();
-
-        $result = db("UserFaq")->insert($faq);
-
-        if (empty($result)) {
-            $this->error("反馈失败,请重试!");
-        }
-
-        $this->success("意见意见反馈成功,请等待管理员与您联系!");
-    }
 }
