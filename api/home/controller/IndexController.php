@@ -8,14 +8,9 @@
 // +----------------------------------------------------------------------
 namespace api\home\controller;
 
-use think\Db;
-use think\Validate;
-use cmf\controller\RestBaseController;
 
-use Phpml\Regression\LeastSquares;
-use Phpml\SupportVectorMachine\Kernel;
-use Phpml\Regression\SVR;
-use Phpml\Association\Apriori;
+use cmf\controller\RestBaseController;
+use Phpml\Classification\NaiveBayes;
 
 class IndexController extends RestBaseController
 {
@@ -29,50 +24,142 @@ class IndexController extends RestBaseController
     }
 
     public function  demo(){
+        $samples = [
+            [15, 56], 
+            [12.1, 46], 
+            [11.4, 43], 
+            [7.4, 28], 
+            [7.6, 29], 
+            [17.2, 65], 
+            [15.3, 57], 
+            [12.4, 46], 
+            [14.5, 55], 
+            [17.4, 65], 
+            [16.3, 61], 
+            [6.8, 26], 
+            [9.3, 37],
+            [26.8, 101],
+            [29.3, 110],
+            [5.2, 19],
+            [12.1, 45],
+            [2.2, 8],
+            [31.1, 117],
+            [31.6, 119],
+            [12.8, 48],
+            [15, 56],
+            [18.1, 68],
+            [9.2, 35],
+            [15.4, 58],
+            [16.9, 63],
+            [25.1, 94],
+            [19.5, 73],
+            [25.4, 95],
+            [29.1, 109],
+            [2.6, 10],
+            [6.1, 23],
+            [9.9, 37],
+            [14, 52],
+            [18.9, 71],
+            [18.8, 70],
+            [7.2, 27],
+            [9.2, 34],
+            [13.7, 51],
+            [15, 56],
+            [15.6, 59],
+            [15.1, 57],
+            [14, 53],
+            [14.3, 54],
+            [7.9, 30],
+            [12.2, 46],
+            [18.2, 68],
+            [7.1, 27],
+            [8.6, 32],
+            [9.7, 36],
+            [13, 49],
+            [14.4, 54],
+            [26.2, 98],
+            [13.5, 51],
+            [10.5, 39],
+            [11.4, 43],
+            [20.6, 77],
+            [21.9, 82],
+            [19.2, 72],
+        ];
+        $labels = [
+            50, 
+            30, 
+            30, 
+            25, 
+            20, 
+            40, 
+            50, 
+            30, 
+            30, 
+            50, 
+            50, 
+            25, 
+            30, 
+            90, 
+            100, 
+            20, 
+            30, 
+            15, 
+            90, 
+            100, 
+            40, 
+            50, 
+            50, 
+            30, 
+            40, 
+            50, 
+            100, 
+            50, 
+            80, 
+            100, 
+            20, 
+            25, 
+            40, 
+            30, 
+            40, 
+            50, 
+            25, 
+            30, 
+            40,
+            50,
+            50,
+            50,
+            40,
+            45,
+            30,
+            40,
+            50,
+            25,
+            30,
+            30,
+            40,
+            50,
+            90,
+            40,
+            40,
+            30,
+            50,
+            50,
+            50,
+        ];
 
-        /*将上面的数据放入$samples数组里
-*/
-        $samples = [[2010], [2011], [2012], [2013], [2014], [2015],[2016]];
-        /*
-        在labels中存入每年的股价涨势
-        */
-        $labels = [1.1, 1.2, 2.1, 3.1, 3.3, 4.1,5.1];
-        /*
-        下面我们采用最小二乘法逼近线性模型进行预测
-        */
-        $regression = new LeastSquares();
-        /*
-        下面我们采用libsvm的向量回归进行预测
-        */
-        $regression = new SVR(Kernel::LINEAR);
-        /* 对其进行训练   */
-        $regression->train($samples, $labels);
-        /*
-        如果我们想知道2017年张氏股的涨势是什么样的，我们用最小二乘法逼近线性模型来进行预测
-        */
-        print_r($regression->predict([2017]));
-    }
-
-    public function demo1(){
-        /*将上面的数据放入$samples数组里
-*/
-        $samples = [['衣服', '鞋子', '辣条'], ['辣条', '面条', '席子'], ['衣服','席子', '面条'], ['衣服','面条','鞋子'],['衣服', '面条', '辣条'],['衣服', '鞋子', '辣条']];
-        $labels  = [];
-        /*
-        参数
-        support支持度
-        confidence 自信度
-        */
-        $associator = new Apriori($support = 0.5, $confidence = 0.5);
-        /* 对其进行训练   */
-        $associator->train($samples, $labels);
-        /*
-        假设又有一位G用户，他购买了衣服，
-        电商网站想要通过他购买的衣服给她推荐别的产品
-        以便他购买更多的商品
-        系统会根据以往用户的训练数据推断出G用户可能需要的商品
-        */
-        print_r($associator->predict(['衣服']));
+        $classifier = new NaiveBayes();
+        $classifier->train($samples, $labels);
+        
+        var_dump($classifier->predict([16.9, 64]));
+        var_dump($classifier->predict([16.3, 61]));
+        var_dump($classifier->predict([13.9, 52]));
+        var_dump($classifier->predict([13.2, 50]));
+        var_dump($classifier->predict([14.2, 53]));
+        var_dump($classifier->predict([12.7, 48]));
+        var_dump($classifier->predict([12.9, 49]));
+        var_dump($classifier->predict([12.4, 46]));
+        var_dump($classifier->predict([23.2, 88]));
+        var_dump($classifier->predict([24.5, 93]));
     }
 
 }

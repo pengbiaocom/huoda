@@ -8,7 +8,7 @@ $baseDir = dirname(dirname($vendorDir));
 return array(
     'Svg\\' => array($vendorDir . '/phenx/php-svg-lib/src'),
     'Sabberworm\\CSS' => array($vendorDir . '/sabberworm/php-css-parser/lib'),
+    'Phpml' => array($vendorDir . '/php-ai/php-ml/src'),
     'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
-    'Phpml' => array($vendorDir . '/php-ai/php-ml/src'),
 );
