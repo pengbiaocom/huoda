@@ -16,6 +16,6 @@ class IndexController extends HomeBaseController
 {
     public function index()
     {
-        return "Hello ThinkCMF!";
+        return '1111';
     }
 }

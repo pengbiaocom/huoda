@@ -79,6 +79,8 @@ class OrderController extends RestBaseController
 		$data['radio_value'] = $this->request->param("radio_value",'');
         $data['model_value'] = $this->request->param("model_value",'');
 		$data['return_goods'] = $this->request->param("return_goods",0);
+		$data['lat'] = $this->request->param("lat");
+		$data['lng'] = $this->request->param("lng");
 
 		if(empty($data))   return json(['code'=>1,'msg'=>'缺少参数']);
 
@@ -275,9 +277,48 @@ class OrderController extends RestBaseController
 			$info['city'] = db("admin_region")->where("id",$info['get_region_tow'])->value("name");
 			$info['county'] = db("admin_region")->where("id",$info['get_region_three'])->value("name");
 			$info['cargo_name'] = db("admin_cargo")->where("id",$info['cid'])->value("name");
+			$time = time()-600;
+			if($time<=$info['create_time']){
+				$info['is_tui'] = 1;
+			}else{
+				$info['is_tui'] = 0;
+			}
 			$info['create_time'] = date("Y-m-d H:i:s",$info['create_time']);
 
+
 			return json(['code'=>0,'msg'=>'success','data'=>$info]);
+		}else{
+			return json(['code'=>1,'msg'=>'没有数据']);
+		}
+	}
+
+	public function order_tui(){
+		$order_id = $this->request->param("id",3);
+
+		if(empty($order_id)) return json(['code'=>1,'msg'=>'缺少参数']);
+		$info = db("order")->where("id",$order_id)->find();
+		if($info){
+
+			$data         = [
+				'object_id'   => $info['id'],
+				'create_time' => time(),
+				'table_name'  => 'order',
+				'name'        => $info['order_number'],
+				'user_id'     => cmf_get_current_admin_id()
+			];
+			$resultPortal = db("order")
+				->where(['id' => $order_id])
+				->update(['delete_time' => time()]);
+			if ($resultPortal) {
+				Db::name('recycleBin')->insert($data);
+				if($info['order_status']==1){
+					//待做微信退款接口
+				}
+				return json(['code'=>0,'msg'=>'订单取消成功']);
+			}else{
+				return json(['code'=>1,'msg'=>'订单取消失败']);
+			}
+
 		}else{
 			return json(['code'=>1,'msg'=>'没有数据']);
 		}

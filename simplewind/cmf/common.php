@@ -1977,3 +1977,55 @@ function cmf_check_mobile($mobile)
         return false;
     }
 }
+
+/**
+ * 查询收件人地址  订单列表显示
+ * @param $get_region_one
+ * @param $get_region_tow
+ * @param $get_region_three
+ * @return string
+ */
+function  get_dui_address($get_region_one,$get_region_tow,$get_region_three){
+    $province = db("admin_region")->where("id",$get_region_one)->value("name");
+    $city = db("admin_region")->where("id",$get_region_tow)->value("name");
+    $county = db("admin_region")->where("id",$get_region_three)->value("name");
+
+    return $province.$city.$county;
+}
+
+/**
+ * 订单列表显示物品信息
+ * @param $radio_value
+ * @param $cid
+ * @param $model_value
+ * @return string
+ */
+function  get_wupin($radio_value,$cid,$model_value){
+    if($radio_value=='small'){
+        $xians = '小件';
+    }else if($radio_value == 'large'){
+        $cargo_name = db("admin_cargo")->where("id",$cid)->value("name");
+
+        $xians = '大件：'.$cargo_name;
+    }else if($radio_value=='many'){
+        $xians = '多件：'.$model_value;
+    }else{
+        $xians = '小件';
+    }
+
+    return $xians;
+}
+
+/**
+ * 订单列表中  是否显示取消订单
+ * @param $create_time
+ * @return bool
+ */
+function check_order_time($create_time){
+    $time = time()-600;
+    if($time<=$create_time){
+       return true;
+    }else{
+      return false;
+    }
+}
