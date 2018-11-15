@@ -245,13 +245,13 @@ class IndexController extends RestBaseController
         //$classifier = new NaiveBayes();
         $classifier = new SVC(Kernel::LINEAR, $cost=10000);
         $classifier->train($samples, $labels);
-        $filepath = "/model";
+        $filepath = "/home/wwwroot/huoda/model";
         $modelManager = new ModelManager();
         $modelManager->saveToFile($classifier, $filepath);
     }
     
     public function predict(){
-        $filepath = "/model";
+        $filepath = "/home/wwwroot/huoda/model";
         $modelManager = new ModelManager();
         $classifier = $modelManager->restoreFromFile($filepath);
         var_dump($classifier->predict([5.4, 20]));
