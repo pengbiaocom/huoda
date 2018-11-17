@@ -66,9 +66,6 @@ class OrderController extends RestBaseController
 		$data['send_address'] = $this->request->param('send_address','');
 		$data['send_username'] = $this->request->param('send_username','');
 		$data['send_phone'] = $this->request->param('send_phone','');
-		$data['get_region_one'] = $this->request->param('get_region_one','');
-		$data['get_region_tow'] = $this->request->param('get_region_tow','');
-		$data['get_region_three'] = $this->request->param('get_region_three','');
 		$data['get_address'] = $this->request->param('get_address','');
 		$data['get_username'] = $this->request->param('get_username','');
 		$data['get_phone'] = $this->request->param('get_phone','');
