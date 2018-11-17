@@ -19,9 +19,17 @@ class GeoController extends RestBaseController
     private $amapKey = '51f64f3a0a6905e0503ceefab4ce0ceb';
     public function read()
     {
-        $address = $this->request->param('address');
-        $rs = $this->http_curl("https://restapi.amap.com/v3/geocode/geo?key=".$this->amapKey."&address=".$address."&city=510100");
-        $location = json_decode($rs, true);
+        $getLocation = $this->request->param('location');
+		
+		$location = [];
+		if(!empty($getLocation)){
+			$location['status'] = 1;
+			$location['geocodes'][0]['location'] = $getLocation;
+		}else{
+			$address = $this->request->param('address');
+			$rs = $this->http_curl("https://restapi.amap.com/v3/geocode/geo?key=".$this->amapKey."&address=".$address."&city=510100");
+			$location = json_decode($rs, true);			
+		}
 
         if($location['status'] == 1){
             /* 计算距离和时间 */
