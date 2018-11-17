@@ -66,11 +66,11 @@ class OrderController extends RestBaseController
 		$data['get_address'] = $this->request->param('get_address','');
 		$data['get_username'] = $this->request->param('get_username','');
 		$data['get_phone'] = $this->request->param('get_phone','');
-		$data['cid'] = $this->request->param('cid','');
 		$data['estimate_time'] = $this->request->param('estimate_time','');
 		$data['order_total_price'] = $this->request->param('order_total_price','');
 		$data['remarks'] = $this->request->param('remarks','');
 		$data['radio_value'] = $this->request->param("radio_value",'');
+		if($data['radio_value'] != 'large') $data['cid'] = $this->request->param('cid','');
         $data['model_value'] = $this->request->param("model_value",'');
 		$data['return_goods'] = $this->request->param("return_goods",0);
 		$data['lat'] = $this->request->param("lat");
