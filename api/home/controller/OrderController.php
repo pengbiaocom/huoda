@@ -267,9 +267,6 @@ class OrderController extends RestBaseController
 		if(empty($order_id)) return json(['code'=>1,'msg'=>'缺少参数']);
 		$info = db("order")->where("id",$order_id)->find();
 		if(!empty($info)){
-			$info['province'] = db("admin_region")->where("id",$info['get_region_one'])->value("name");
-			$info['city'] = db("admin_region")->where("id",$info['get_region_tow'])->value("name");
-			$info['county'] = db("admin_region")->where("id",$info['get_region_three'])->value("name");
 			$info['cargo_name'] = db("admin_cargo")->where("id",$info['cid'])->value("name");
 			$time = time()-600;
 			if($time<=$info['create_time']){
