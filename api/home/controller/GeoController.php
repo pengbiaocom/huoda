@@ -47,14 +47,10 @@ class GeoController extends RestBaseController
                 $response['duration'] = [];
                 $response['price'] = [];
             }
-
+            $this->success("获取成功!", $response);
         }else{
-            $response['geo'] = [];
-            $response['distance'] = [];
-            $response['duration'] = [];
-            $response['price'] = [];
+            $this->error("获取失败");
         }
-        $this->success("获取成功!", $response);
 
     }
     
