@@ -46,9 +46,6 @@ class OrderController extends RestBaseController
         if(!empty($list)){
 			$list = json_decode($list,true);
 			foreach($list as $key=>$row){
-				$list[$key]['province'] = db("admin_region")->where("id",$row['get_region_one'])->value("name");
-				$list[$key]['city'] = db("admin_region")->where("id",$row['get_region_tow'])->value("name");
-				$list[$key]['county'] = db("admin_region")->where("id",$row['get_region_three'])->value("name");
 				$list[$key]['create_time'] = date("Y-m-d H:i:s",$row['create_time']);
 			}
 			return json(['code'=>0, 'msg'=>'调用成功', 'data'=>$list, 'paginate'=>array( 'page'=>sizeof($list) < $limit ? $page : $page+1, 'limit'=>$limit)]);
