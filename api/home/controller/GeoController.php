@@ -20,13 +20,7 @@ class GeoController extends RestBaseController
     public function read()
     {
         $address = $this->request->param('address');
-//        $id =  $this->request->param('region',0);
-//
-//        $info = db("admin_region")->where(['id'=>$id])->find();
-//        $response['info'] = $info;
-
         $rs = $this->http_curl("https://restapi.amap.com/v3/geocode/geo?key=".$this->amapKey."&address=".$address."&city=510100");
-        
         $location = json_decode($rs, true);
 
         if($location['status'] == 1){
