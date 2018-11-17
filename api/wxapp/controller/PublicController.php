@@ -62,11 +62,12 @@ class PublicController extends RestBaseController
 
         $response = cmf_curl_get("https://api.weixin.qq.com/sns/jscode2session?appid=$appId&secret=$appSecret&js_code=$code&grant_type=authorization_code");
         $response = json_decode($response, true);
+
         if(!isset($response['session_key']) && empty($response['session_key'])){
-            $this->error('操作失败!');
+            $this->error('操作失败1!');
         }
 //        if (isset($response['errcode']) && !empty($response['errcode'])) {
-//            $this->error('操作失败!');
+//            $this->error('操作失败1!');
 //        }
 
         $openid     = $response['openid'];
@@ -75,7 +76,7 @@ class PublicController extends RestBaseController
         $pc      = new WXBizDataCrypt($appId, $sessionKey);
         $errCode = $pc->decryptDatas($data['encrypted_data'], $data['iv'], $wxUserData);
         if ($errCode != 0) {
-            $this->error('操作失败!');
+            $this->error('操作失败2!');
         }
 
         $findThirdPartyUser = Db::name("third_party_user")

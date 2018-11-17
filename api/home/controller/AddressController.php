@@ -56,12 +56,16 @@ class AddressController extends RestBaseController
 		    break;
 		}
 
-		if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
-		    $response = [$data];
-		} else {
-		    $response = $data;
+		if(!empty($data)){
+			if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
+				$response = [$data];
+			} else {
+				$response = $data;
+			}
+			$this->success("地址获取成功!", $response);
+		}else{
+			$this->error("地址获取失败!");
 		}
-		
-		$this->success("地址获取成功!", $response);
+
     }
 }

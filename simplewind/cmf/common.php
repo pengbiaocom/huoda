@@ -2029,3 +2029,9 @@ function check_order_time($create_time){
       return false;
     }
 }
+
+function  show_order_text($status=0){
+    $data = ['0'=>'进行中','1'=>'完成','2'=>'取消'];
+
+    return $data[$status];
+}

@@ -58,7 +58,7 @@
                         {$vo.send_username}
                     </td>
                     <td>{$vo.send_phone}</td>
-                    <td>{:get_dui_address($vo['get_region_one'],$vo['get_region_tow'],$vo['get_region_three'])}{$vo.get_address}</td>
+                    <td>{$vo.get_address}</td>
                     <td>
                         {$vo.get_username}
                     </td>
@@ -75,7 +75,7 @@
                         {$vo.estimate_time}
                     </td>
                     <td>
-                        {$vo.order_status}
+                        {:show_order_text($vo.order_status)}
                     </td>
                     <td>
                         {$vo.remarks}
