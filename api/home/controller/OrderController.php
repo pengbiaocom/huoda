@@ -46,6 +46,11 @@ class OrderController extends RestBaseController
         if(!empty($list)){
 			$list = json_decode($list,true);
 			foreach($list as $key=>$row){
+				if(time()-$row['create_time']<=600){
+					$list[$key]['is_tui'] = 1;
+				}else{
+					$list[$key]['is_tui'] = 0;
+				}
 				$list[$key]['create_time'] = date("Y-m-d H:i:s",$row['create_time']);
 			}
 			return json(['code'=>0, 'msg'=>'调用成功', 'data'=>$list, 'paginate'=>array( 'page'=>sizeof($list) < $limit ? $page : $page+1, 'limit'=>$limit)]);
@@ -76,6 +81,8 @@ class OrderController extends RestBaseController
 		$data['lat'] = $this->request->param("lat");
 		$data['lng'] = $this->request->param("lng");
 
+		$data['order_total_price'] = 0.01;
+
 		if(empty($data))   return json(['code'=>1,'msg'=>'缺少参数']);
 
 		$data['order_number'] = 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
@@ -95,7 +102,7 @@ class OrderController extends RestBaseController
 				'out_trade_no'	=> 'YF'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
 				'total_fee'		=> $data['order_total_price'] * 100,
 				'spbill_create_ip'	=> get_client_ip(),
-				'notify_url'	=> 'https://huoda.chouvc.com/api/home/order/notify',
+				'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
 				'trade_type'	=> 'JSAPI',
 				'openid'		=> $user['openid']
 			);
@@ -156,7 +163,7 @@ class OrderController extends RestBaseController
 			'out_trade_no'	=> 'YF'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
 			'total_fee'		=> $order['order_total_price'] * 100,
 			'spbill_create_ip'	=> get_client_ip(),
-			'notify_url'	=> 'https://huoda.chouvc.com/api/home/order/notify',
+			'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
 			'trade_type'	=> 'JSAPI',
 			'openid'		=> $user['openid']
 		);
@@ -267,8 +274,7 @@ class OrderController extends RestBaseController
 		$info = db("order")->where("id",$order_id)->find();
 		if(!empty($info)){
 			$info['cargo_name'] = db("admin_cargo")->where("id",$info['cid'])->value("name");
-			$time = time()-600;
-			if($time<=$info['create_time']){
+			if(time()-$info['create_time']<=600){
 				$info['is_tui'] = 1;
 			}else{
 				$info['is_tui'] = 0;
@@ -283,34 +289,144 @@ class OrderController extends RestBaseController
 	}
 
 	public function order_tui(){
-		$order_id = $this->request->param("id",3);
+		$order_id = $this->request->param("id");
 
 		if(empty($order_id)) return json(['code'=>1,'msg'=>'缺少参数']);
 		$info = db("order")->where("id",$order_id)->find();
 		if($info){
-
-			$data         = [
-				'object_id'   => $info['id'],
-				'create_time' => time(),
-				'table_name'  => 'order',
-				'name'        => $info['order_number'],
-				'user_id'     => cmf_get_current_admin_id()
-			];
-			$resultPortal = db("order")
-				->where(['id' => $order_id])
-				->update(['delete_time' => time()]);
-			if ($resultPortal) {
-				Db::name('recycleBin')->insert($data);
-				if($info['order_status']==1){
-					//待做微信退款接口
+            if($info['order_status']==0){
+				$data         = [
+					'object_id'   => $info['id'],
+					'create_time' => time(),
+					'table_name'  => 'order',
+					'name'        => $info['order_number'],
+					'user_id'     => cmf_get_current_admin_id()
+				];
+				$resultPortal = db("order")
+					->where(['id' => $order_id])
+					->update(['delete_time' => time()]);
+				if($resultPortal){
+					Db::name('recycleBin')->insert($data);
+					return json(['code'=>0,'msg'=>'订单取消成功']);
+				}else{
+					return json(['code'=>1,'msg'=>'订单取消失败']);
 				}
-				return json(['code'=>0,'msg'=>'订单取消成功']);
-			}else{
-				return json(['code'=>1,'msg'=>'订单取消失败']);
-			}
+			}else if($info['order_status']>=0){
+				//处理退款接口
+				$config = [
+					'appid'=>'wx5f90b077ca92b8e7',
+					'pay_mchid'=>'1517605631',
+					'pay_apikey'=>'6ba57bc32cfd5044f8710f09ff86c664'
+				];
+				$this->config = $config;
 
+				if($this->refund($info)){
+					$data         = [
+						'object_id'   => $info['id'],
+						'create_time' => time(),
+						'table_name'  => 'order',
+						'name'        => $info['order_number'],
+						'user_id'     => cmf_get_current_admin_id()
+					];
+					db("order")->where(['id' => $order_id])->update(['delete_time' => time()]);
+					Db::name('recycleBin')->insert($data);
+					return json(['code'=>0,'msg'=>'取消成功！']);
+				} else {
+					return json(['code'=>1,'msg'=>'取消失败！']);
+				}
+			}
 		}else{
 			return json(['code'=>1,'msg'=>'没有数据']);
+		}
+	}
+
+	/**
+	 * 退款申请
+	 * @date: 2018年7月27日 上午9:00:18
+	 * @author: onep2p <324834500@qq.com>
+	 * @param: variable
+	 * @return:
+	 */
+	private function refund($order){
+		$config = $this->config;
+
+		//退款申请参数构造
+		if($order){
+			$refunddorder = array(
+				'appid'			=> $config['appid'],
+				'mch_id'		=> $config['pay_mchid'],
+				'nonce_str'		=> self::getNonceStr(),
+				'out_trade_no'	=> $order['order_number'],
+				'out_refund_no' => 'tk_' . md5($order['order_number']),//退款唯一单号，系统生成
+				'total_fee'		=> $order['order_total_price'] * 100,
+				'refund_fee'    => $order['order_total_price'] * 100,//退款金额,通过计算得到要退还的金额
+			);
+
+			$refunddorder['sign'] = self::makeSign($refunddorder);
+
+			//请求数据
+			$xmldata = self::array2xml($refunddorder);
+			$url = 'https://api.mch.weixin.qq.com/secapi/pay/refund';
+			$res = self::postXmlCurl($xmldata, $url, true);
+			$resData = $this->xml2array($res);
+
+			if($resData['return_code'] === 'SUCCESS' && $resData['return_msg'] === 'OK' && $resData['result_code'] === 'SUCCESS'){
+				return true;
+			}
+
+			return false;
+		}
+	}
+
+	/**
+	 * 以post方式提交xml到对应的接口url
+	 *
+	 * @param string $xml  需要post的xml数据
+	 * @param string $url  url
+	 * @param bool $useCert 是否需要证书，默认不需要
+	 * @param int $second   url执行超时时间，默认30s
+	 * @throws WxPayException
+	 */
+	private function postXmlCurl($xml, $url, $useCert = false, $second = 30)
+	{
+		$ch = curl_init();
+		//设置超时
+		curl_setopt($ch, CURLOPT_TIMEOUT, $second);
+		curl_setopt($ch,CURLOPT_URL, $url);
+		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,TRUE);
+		curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,2);//严格校验
+
+		//设置header
+		curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+		//要求结果为字符串且输出到屏幕上
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+
+		if($useCert == true){
+			//设置证书
+			//使用证书：cert 与 key 分别属于两个.pem文件
+			curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
+			curl_setopt($ch,CURLOPT_SSLCERT, './cert/apiclient_cert.pem');
+			curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
+			curl_setopt($ch,CURLOPT_SSLKEY, './cert/apiclient_key.pem');
+		}
+
+		//post提交方式
+		curl_setopt($ch, CURLOPT_POST, TRUE);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+
+		//运行curl
+		$data = curl_exec($ch);
+
+		//返回结果
+		if($data){
+			curl_close($ch);
+			return $data;
+		} else {
+			$error = curl_errno($ch);
+			echo "curl出错，错误代码：$error"."<br/>";
+			curl_close($ch);
+			echo false;
 		}
 	}
 	
