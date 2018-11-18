@@ -17,8 +17,8 @@ class OrderController extends RestBaseController
         parent::_initialize();
 		//微信支付参数配置(appid,商户号,支付秘钥)
 		$config = [
-			'appid'=>'wxa6737565830cae42',
-			'pay_mchid'=>'1509902681',
+			'appid'=>'wx5f90b077ca92b8e7',
+			'pay_mchid'=>'1517605631',
 			'pay_apikey'=>'6ba57bc32cfd5044f8710f09ff86c664'
 		];
 
@@ -85,7 +85,6 @@ class OrderController extends RestBaseController
 		$user = db("third_party_user")->where("user_id",$data['uid'])->find();
 
 		if($id = db("order")->insertGetId($data)){
-			return json(['code'=>0,'msg'=>'下单成功']);
 			$config = $this->config;
 			//统一下单参数构造
 			$unifiedorder = array(
