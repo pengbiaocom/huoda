@@ -37,6 +37,7 @@ class OrderController extends RestBaseController
 		if(empty($uid))  return json(['code'=>1,'msg'=>'缺少参数']);
 
 		$where['uid'] = $uid;
+		$where['delete_time'] = 0;
 		if($status != 'all'){
 			$where['order_status'] = $status;
 		}
@@ -223,10 +224,10 @@ class OrderController extends RestBaseController
 
 	//微信支付回调验证
 	public function notify(){
-		$xml = $GLOBALS['HTTP_RAW_POST_DATA'];
-
+//		$xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+		$xml = file_get_contents('php://input');
 		// 这句file_put_contents是用来查看服务器返回的XML数据 测试完可以删除了
-		//file_put_contents(APP_ROOT.'/Statics/log2.txt',$res,FILE_APPEND);
+//		cmf_log($xml,CMF_ROOT . 'data/runtime/log.txt');
 
 		//将服务器返回的XML数据转化为数组
 		$data = self::xml2array($xml);
@@ -245,7 +246,7 @@ class OrderController extends RestBaseController
 			$openid = $data['openid'];					//付款人openID
 			$total_fee = $data['total_fee'];			//付款金额
 			$transaction_id = $data['transaction_id']; 	//微信支付流水号
-			db("order")->where(['order_number'=>$order_sn])->update(['status'=>1]);
+			db("order")->where(['order_number'=>$order_sn])->update(['order_status'=>1]);
 		}else{
 			$out_trade_no =  explode('_',$data['out_trade_no']);
 			$order_sn = $out_trade_no[0];			//订单单号
@@ -274,7 +275,9 @@ class OrderController extends RestBaseController
 		$info = db("order")->where("id",$order_id)->find();
 		if(!empty($info)){
 			$info['cargo_name'] = db("admin_cargo")->where("id",$info['cid'])->value("name");
-			if(time()-$info['create_time']<=600){
+			$comSetting = cmf_get_option('base_setting');
+			$del_time = $comSetting['del_max_time']? $comSetting['del_max_time']:6;
+			if(time()-$info['create_time']<=$del_time*60){
 				$info['is_tui'] = 1;
 			}else{
 				$info['is_tui'] = 0;
@@ -300,7 +303,7 @@ class OrderController extends RestBaseController
 					'create_time' => time(),
 					'table_name'  => 'order',
 					'name'        => $info['order_number'],
-					'user_id'     => cmf_get_current_admin_id()
+					'user_id'     => $info['uid']
 				];
 				$resultPortal = db("order")
 					->where(['id' => $order_id])
@@ -326,7 +329,7 @@ class OrderController extends RestBaseController
 						'create_time' => time(),
 						'table_name'  => 'order',
 						'name'        => $info['order_number'],
-						'user_id'     => cmf_get_current_admin_id()
+						'user_id'     =>  $info['uid']
 					];
 					db("order")->where(['id' => $order_id])->update(['delete_time' => time()]);
 					Db::name('recycleBin')->insert($data);
@@ -401,14 +404,13 @@ class OrderController extends RestBaseController
 
 		//要求结果为字符串且输出到屏幕上
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-
 		if($useCert == true){
 			//设置证书
 			//使用证书：cert 与 key 分别属于两个.pem文件
 			curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLCERT, './cert/apiclient_cert.pem');
+			curl_setopt($ch,CURLOPT_SSLCERT, CMF_ROOT.'/public_html/cert/apiclient_cert.pem');
 			curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-			curl_setopt($ch,CURLOPT_SSLKEY, './cert/apiclient_key.pem');
+			curl_setopt($ch,CURLOPT_SSLKEY, CMF_ROOT.'/public_html/cert/apiclient_key.pem');
 		}
 
 		//post提交方式
