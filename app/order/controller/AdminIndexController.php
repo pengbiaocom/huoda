@@ -19,11 +19,10 @@ class AdminIndexController extends AdminBaseController
 {
     public function index()
     {
-
         $param = $this->request->param();
 
         $orderService = new OrderService();
-        $data        = $orderService->adminOrderList($param);
+        $data = $orderService->adminOrderList($param);
 
         $data->appends($param);
 
@@ -36,10 +35,16 @@ class AdminIndexController extends AdminBaseController
 
         return $this->fetch();
     }
+    
+    public function push()
+    {
+        $orderService = new OrderService();
+        $getStart = $orderService->adminOrderFind();
+    }
 
     public function delete()
     {
-        $param           = $this->request->param();
+        $param = $this->request->param();
         $orderModel = new OrderModel();
 
         if (isset($param['id'])) {

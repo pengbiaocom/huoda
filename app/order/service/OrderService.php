@@ -30,7 +30,7 @@ class OrderService
         $field = 'a.*,u.user_login,u.user_nickname,u.user_email';
 
         $startTime = empty($filter['start_time']) ? 0 : strtotime($filter['start_time']);
-        $endTime   = empty($filter['end_time']) ? 0 : strtotime($filter['end_time']);
+        $endTime = empty($filter['end_time']) ? 0 : strtotime($filter['end_time']);
         if (!empty($startTime) && !empty($endTime)) {
             $where['a.create_time'] = [['>= time', $startTime], ['<= time', $endTime]];
         } else {
@@ -48,7 +48,7 @@ class OrderService
         }
 
         $orderModel = new OrderModel();
-        $articles        = $orderModel->alias('a')->field($field)
+        $articles = $orderModel->alias('a')->field($field)
             ->join($join)
             ->where($where)
             ->order("a.order_status asc,a.lat asc,a.lng asc,create_time desc")
@@ -56,6 +56,11 @@ class OrderService
 
         return $articles;
 
+    }
+    
+    public function adminOrderFind($filter)
+    {
+        
     }
 
 }

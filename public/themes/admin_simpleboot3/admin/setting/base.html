@@ -4,9 +4,6 @@
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
         <li class="active"><a href="#A" data-toggle="tab">基础设置</a></li>
-        <li><a href="#B" data-toggle="tab">关于我们</a></li>
-        <li><a href="#C" data-toggle="tab">用户协议</a></li>
-        <li><a href="#D" data-toggle="tab">价格说明</a></li>
     </ul>
     <form class="form-horizontal js-ajax-form margin-top-20" role="form" action="{:url('setting/basePost')}"
           method="post">
@@ -27,59 +24,14 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="input-site_icp" class="col-sm-2 control-label">公告设置</label>
+                            <label for="input-site_icp" class="col-sm-2 control-label">下单后多长时间能取消</label>
                             <div class="col-md-6 col-sm-10">
-                                <textarea class="form-control" name="options[notice]" style="height:300px;" placeholder="">{$base_setting.notice}</textarea>
+                                <input type="text" class="form-control" id="input-site_icp" name="options[del_max_time]" value="{$base_setting.del_max_time}">
                             </div>
                         </div>                        
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="1">
-                                    {:lang('SAVE')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="B">
-                        <div class="form-group">
-                            <label for="input-site_icp" class="col-sm-2 control-label">关于我们</label>
-                            <div class="col-md-6 col-sm-10">
-                                <textarea class="form-control" name="options[about]" style="height:450px;" placeholder="">{$base_setting.about}</textarea>
-                            </div>
-                        </div> 
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="0">
-                                    {:lang('SAVE')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="C">
-                        <div class="form-group">
-                            <label for="input-site_icp" class="col-sm-2 control-label">用户协议</label>
-                            <div class="col-md-6 col-sm-10">
-                                <textarea class="form-control" name="options[user_agreement]" style="height:450px;" placeholder="">{$base_setting.user_agreement}</textarea>
-                            </div>
-                        </div> 
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="0">
-                                    {:lang('SAVE')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="D">
-                        <div class="form-group">
-                            <label for="input-site_icp" class="col-sm-2 control-label">价格说明</label>
-                            <div class="col-md-6 col-sm-10">
-                                <textarea class="form-control" name="options[price_explain]" style="height:450px;" placeholder="">{$base_setting.price_explain}</textarea>
-                            </div>
-                        </div> 
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                <button type="submit" class="btn btn-primary js-ajax-submit" data-refresh="0">
                                     {:lang('SAVE')}
                                 </button>
                             </div>
