@@ -72,18 +72,17 @@ class GeoController extends RestBaseController
             $startLat = '30.630897';
             list($endLng,$endLat) = explode(',', $location);
             
+            $radLat1=deg2rad($startLat);//deg2rad()函数将角度转换为弧度
+            $radLat2=deg2rad($endLat);
+            $radLng1=deg2rad($startLng);
+            $radLng2=deg2rad($endLng);
+            $a=$radLat1-$radLat2;
+            $b=$radLng1-$radLng2;
             
-            $earthRadius = 6367000; //approximate radius of earth in meters
-            $startLat = ($startLat * pi() ) / 180;
-            $startLng = ($startLng * pi() ) / 180;
-            $endLat = ($endLat * pi() ) / 180;
-            $endLng = ($endLng * pi() ) / 180;
-            $calcLongitude = $endLng - $startLng;
-            $calcLatitude = $endLat - $startLat;
-            $stepOne = pow(sin($calcLatitude / 2), 2) + cos($startLat) * cos($endLat) * pow(sin($calcLongitude / 2), 2);
-            $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
-            $calculated['distance'] = round($earthRadius * $stepTwo);
-            $calculated['duration'] = round($earthRadius * $stepTwo / 350) + 30;
+            $distance = 2*asin(sqrt(pow(sin($a/2),2)+cos($radLat1)*cos($radLat2)*pow(sin($b/2),2)))*6378137;
+            
+            $calculated['distance'] = round($distance);
+            $calculated['duration'] = round($distance / 350) + 30;
             $calculated['price'] = $this->priceCalculation($calculated['distance'], $calculated['duration']-30);
         }
         

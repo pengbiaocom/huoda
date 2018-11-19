@@ -38,8 +38,12 @@ class AdminIndexController extends AdminBaseController
     
     public function push()
     {
+        $baseSetting = cmf_get_option('base_setting');
+        
         $orderService = new OrderService();
-        $getStart = $orderService->adminOrderFind();
+        $param['dispatch_max_num'] = $baseSetting['dispatch_max_num'];
+        $param['big_max_num'] = $baseSetting['big_max_num'];
+        $getStart = $orderService->adminOrderPush($param);
     }
 
     public function delete()

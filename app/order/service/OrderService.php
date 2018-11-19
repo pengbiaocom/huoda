@@ -17,7 +17,6 @@ class OrderService
 
     public function adminOrderList($filter)
     {
-
         $where = [
             'a.create_time' => ['>=', 0],
             'a.delete_time' => 0
@@ -58,9 +57,52 @@ class OrderService
 
     }
     
-    public function adminOrderFind($filter)
+    public function adminOrderPush($filter)
     {
+        $orderModel = new OrderModel();
+        $orders = $orderModel::all(function($query){
+            $query->alias('order');
+            $query->where('order.order_status', 1);
+            $query->order('order.create_time');
+        });
         
+        $pushs = [];
+        $big = [];
+        $ids = [];
+        
+
+        $startLng = '104.025652';
+        $startLat = '30.630897';
+        while(count($pushs) < $filter['dispatch_max_num']){
+            $distance = [];
+            foreach ($orders as $order){
+                if(!in_array($order['id'], $ids)){
+                    if($order['radio_value'] == 'large' && count($big) >= $filter['big_max_num']) continue;
+                    
+                    $endLng = $order['lng'];
+                    $endLat = $order['lat'];
+                    
+                    $radLat1=deg2rad($startLat);//deg2rad()函数将角度转换为弧度
+                    $radLat2=deg2rad($endLat);
+                    $radLng1=deg2rad($startLng);
+                    $radLng2=deg2rad($endLng);
+                    $a=$radLat1-$radLat2;
+                    $b=$radLng1-$radLng2;
+                    
+                    $distance[] = ['id'=>$order['id'], 'lng'=>$order['lng'], 'lat'=>$order['lat'], 'get_address'=>$order['get_address'], 'distance'=>round(2*asin(sqrt(pow(sin($a/2),2)+cos($radLat1)*cos($radLat2)*pow(sin($b/2),2)))*6378137)];                    
+                }
+            }
+            
+            $last_names = array_column($distance,'distance');
+            array_multisort($last_names,SORT_ASC,$distance);
+            
+            $pushs[] = $distance[0];
+            $ids[] = $distance[0]['id'];
+            $startLng = $distance[0]['lng'];
+            $startLat = $distance[0]['lat'];
+        }
+        
+        dump($pushs);
     }
 
 }
