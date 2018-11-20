@@ -163,7 +163,8 @@ class AdminIndexController extends AdminBaseController
         if (isset($param['id'])) {
             $id           = $this->request->param('id', 0, 'intval');
             $result       = $orderModel->where(['id' => $id])->find();
-            if($this->refund($result)){
+
+            if($result['order_status']==0){
                 $data         = [
                     'object_id'   => $result['id'],
                     'create_time' => time(),
@@ -178,7 +179,26 @@ class AdminIndexController extends AdminBaseController
                     Db::name('recycleBin')->insert($data);
                 }
                 $this->success("删除成功！", '');
+            }else{
+                if($this->refund($result)){
+                    $data         = [
+                        'object_id'   => $result['id'],
+                        'create_time' => time(),
+                        'table_name'  => 'order',
+                        'name'        => $result['order_number'],
+                        'user_id'     => cmf_get_current_admin_id()
+                    ];
+                    $resultPortal = $orderModel
+                        ->where(['id' => $id])
+                        ->update(['delete_time' => time(),'order_status'=>-1]);
+                    if ($resultPortal) {
+                        Db::name('recycleBin')->insert($data);
+                    }
+                    $this->success("删除成功！", '');
+                }
             }
+
+
         }
 
         if (isset($param['ids'])) {
@@ -187,7 +207,7 @@ class AdminIndexController extends AdminBaseController
             $result  = $orderModel->where(['id' => ['in', $ids]])->update(['delete_time' => time(),'order_status'=>-1]);
             if ($result) {
                 foreach ($recycle as $value) {
-                    if($this->refund($value)){
+                    if($value['order_status']==0){
                         $data = [
                             'object_id'   => $value['id'],
                             'create_time' => time(),
@@ -196,7 +216,19 @@ class AdminIndexController extends AdminBaseController
                             'user_id'     => cmf_get_current_admin_id()
                         ];
                         Db::name('recycleBin')->insert($data);
+                    }else{
+                        if($this->refund($value)){
+                            $data = [
+                                'object_id'   => $value['id'],
+                                'create_time' => time(),
+                                'table_name'  => 'order',
+                                'name'        => $value['order_number'],
+                                'user_id'     => cmf_get_current_admin_id()
+                            ];
+                            Db::name('recycleBin')->insert($data);
+                        }
                     }
+
                 }
                 $this->success("删除成功！", '');
             }
