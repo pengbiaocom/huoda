@@ -136,6 +136,18 @@ class AdminIndexController extends AdminBaseController
     {
         
     }
+    
+    /**
+    * 管理配送数据中的订单（需要移除功能）
+    * @date: 2018年11月20日 下午6:04:32
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function managerOrder()
+    {
+        
+    }
 
     /**
     * 取消订单
