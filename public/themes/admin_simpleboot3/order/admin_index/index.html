@@ -23,11 +23,6 @@
         <table class="table table-hover table-bordered table-list">
             <thead>
             <tr>
-                <th width="15">
-                    <label>
-                        <input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x">
-                    </label>
-                </th>
                 <th width="50">ID</th>
                 <th>发单地址</th>
                 <th>发单联系人</th>
@@ -46,10 +41,6 @@
             </thead>
             <foreach name="orderlist" item="vo">
                 <tr>
-                    <td>
-                        <input type="checkbox" class="js-check" data-yid="js-check-y" data-xid="js-check-x" name="ids[]"
-                               value="{$vo.id}" title="ID:{$vo.id}">
-                    </td>
                     <td><b>{$vo.order_number}</b></td>
                     <td>
                         {$vo.send_address}

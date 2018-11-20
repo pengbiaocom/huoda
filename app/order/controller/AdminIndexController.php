@@ -17,6 +17,13 @@ use think\Db;
 
 class AdminIndexController extends AdminBaseController
 {
+    /**
+    * 订单列表
+    * @date: 2018年11月20日 下午5:39:24
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
     public function index()
     {
         $param = $this->request->param();
@@ -36,6 +43,13 @@ class AdminIndexController extends AdminBaseController
         return $this->fetch();
     }
     
+    /**
+    * 订单派送列表
+    * @date: 2018年11月20日 下午5:38:58
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
     public function push()
     {
         $baseSetting = cmf_get_option('base_setting');
@@ -49,6 +63,13 @@ class AdminIndexController extends AdminBaseController
         return $this->fetch();
     }
     
+    /**
+    * 获取当前可发车的配送员
+    * @date: 2018年11月20日 下午5:38:43
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
     public function select()
     {   
         $orderService = new OrderService();
@@ -58,6 +79,13 @@ class AdminIndexController extends AdminBaseController
         return $this->fetch();
     }
     
+    /**
+    * 打印派送订单数据
+    * @date: 2018年11月20日 下午5:38:28
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
     public function print()
     {
         $distribution = [];
@@ -95,7 +123,26 @@ class AdminIndexController extends AdminBaseController
             dump($e);
         }
     }
+    
+    /**
+    * 管理配送数据
+    * @date: 2018年11月20日 下午5:39:33
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function manager()
+    {
+        
+    }
 
+    /**
+    * 取消订单
+    * @date: 2018年11月20日 下午5:39:47
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
     public function delete()
     {
         $param = $this->request->param();
