@@ -39,7 +39,12 @@ class OrderController extends RestBaseController
 		$where['uid'] = $uid;
 		$where['delete_time'] = 0;
 		if($status != 'all'){
-			$where['order_status'] = $status;
+			if($status == 1){
+				$where['order_status'] = ['in','1,2'];
+			}else{
+				$where['order_status'] = $status;
+			}
+
 		}
 
 		$list = Db::name("order")->where($where)->order('create_time desc')->limit(($page-1)*$limit, $limit)->select();
@@ -82,7 +87,7 @@ class OrderController extends RestBaseController
 		$data['lat'] = $this->request->param("lat");
 		$data['lng'] = $this->request->param("lng");
 
-		$data['order_total_price'] = 0.01;
+//		$data['order_total_price'] = 0.01;
 
 		if(empty($data))   return json(['code'=>1,'msg'=>'缺少参数']);
 
@@ -100,7 +105,7 @@ class OrderController extends RestBaseController
 				'mch_id'		=> $config['pay_mchid'],
 				'nonce_str'		=> self::getNonceStr(),
 				'body'			=> '货达',
-				'out_trade_no'	=> 'YF'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
+				'out_trade_no'	=> 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
 				'total_fee'		=> $data['order_total_price'] * 100,
 				'spbill_create_ip'	=> get_client_ip(),
 				'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
@@ -161,7 +166,7 @@ class OrderController extends RestBaseController
 			'mch_id'		=> $config['pay_mchid'],
 			'nonce_str'		=> self::getNonceStr(),
 			'body'			=> '货达',
-			'out_trade_no'	=> 'YF'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
+			'out_trade_no'	=> 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
 			'total_fee'		=> $order['order_total_price'] * 100,
 			'spbill_create_ip'	=> get_client_ip(),
 			'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
@@ -307,7 +312,7 @@ class OrderController extends RestBaseController
 				];
 				$resultPortal = db("order")
 					->where(['id' => $order_id])
-					->update(['delete_time' => time()]);
+					->update(['delete_time' => time(),'order_status'=>-1]);
 				if($resultPortal){
 					Db::name('recycleBin')->insert($data);
 					return json(['code'=>0,'msg'=>'订单取消成功']);
@@ -331,7 +336,7 @@ class OrderController extends RestBaseController
 						'name'        => $info['order_number'],
 						'user_id'     =>  $info['uid']
 					];
-					db("order")->where(['id' => $order_id])->update(['delete_time' => time()]);
+					db("order")->where(['id' => $order_id])->update(['delete_time' => time(),'order_status'=>-1]);
 					Db::name('recycleBin')->insert($data);
 					return json(['code'=>0,'msg'=>'取消成功！']);
 				} else {

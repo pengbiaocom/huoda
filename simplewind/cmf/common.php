@@ -2031,7 +2031,7 @@ function check_order_time($create_time){
 }
 
 function  show_order_text($status=0){
-    $data = ['0'=>'进行中','1'=>'完成','2'=>'取消'];
+    $data = ['0'=>'待支付','1'=>'等待派发','2'=>'配送中','3'=>'配送完成'];
 
     return $data[$status];
 }
