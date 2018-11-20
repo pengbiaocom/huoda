@@ -104,6 +104,7 @@ class AdminIndexController extends AdminBaseController
                         /* 插入配送数据 */
                         $distribution['distributions'] = json_encode($distribution['distributions']);
                         if(Db::table("__DISTRIBUTION__")->insert($distribution)){
+                            /* 处理出数据返回给html操作打印 */
                             echo 1;
                         }else{
                             exception('派单失败');
@@ -120,7 +121,7 @@ class AdminIndexController extends AdminBaseController
         } catch (\Exception $e) {
             Db::rollback();
             
-            dump($e);
+            echo $e->getMessage();
         }
     }
     
