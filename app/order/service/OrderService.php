@@ -50,7 +50,7 @@ class OrderService
         $articles = $orderModel->alias('a')->field($field)
             ->join($join)
             ->where($where)
-            ->order("a.order_status asc,a.lat asc,a.lng asc,create_time desc")
+            ->order("a.order_status asc,create_time desc")
             ->paginate(10);
 
         return $articles;
@@ -89,7 +89,10 @@ class OrderService
                     $a=$radLat1-$radLat2;
                     $b=$radLng1-$radLng2;
                     
-                    $distance[] = ['id'=>$order['id'], 'lng'=>$order['lng'], 'lat'=>$order['lat'], 'get_address'=>$order['get_address'], 'distance'=>round(2*asin(sqrt(pow(sin($a/2),2)+cos($radLat1)*cos($radLat2)*pow(sin($b/2),2)))*6378137)];                    
+                    $data = $order;
+                    $data['distance'] = round(2*asin(sqrt(pow(sin($a/2),2)+cos($radLat1)*cos($radLat2)*pow(sin($b/2),2)))*6378137);
+                    
+                    $distance[] = $data;
                 }
             }
             
@@ -102,7 +105,7 @@ class OrderService
             $startLat = $distance[0]['lat'];
         }
         
-        dump($pushs);
+        return $pushs;
     }
 
 }

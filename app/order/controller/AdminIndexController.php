@@ -43,7 +43,10 @@ class AdminIndexController extends AdminBaseController
         $orderService = new OrderService();
         $param['dispatch_max_num'] = $baseSetting['dispatch_max_num'];
         $param['big_max_num'] = $baseSetting['big_max_num'];
-        $getStart = $orderService->adminOrderPush($param);
+        $pushs = $orderService->adminOrderPush($param);
+        
+        $this->assign('pushs', $pushs);
+        return $this->fetch();
     }
 
     public function delete()
