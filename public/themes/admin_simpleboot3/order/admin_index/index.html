@@ -24,12 +24,8 @@
             <thead>
             <tr>
                 <th width="50">ID</th>
-                <th>发单地址</th>
-                <th>发单联系人</th>
-                <th>发单联系电话</th>
-                <th>收方地址</th>
-                <th>收方联系人</th>
-                <th>收方联系电话</th>
+                <th>发件信息</th>
+                <th>收件信息</th>
                 <th>物品信息</th>
                 <th>订单价格</th>
                 <th>预估时间</th>
@@ -42,20 +38,8 @@
             <foreach name="orderlist" item="vo">
                 <tr>
                     <td><b>{$vo.order_number}</b></td>
-                    <td>
-                        {$vo.send_address}
-                    </td>
-                    <td>
-                        {$vo.send_username}
-                    </td>
-                    <td>{$vo.send_phone}</td>
-                    <td>{$vo.get_address}</td>
-                    <td>
-                        {$vo.get_username}
-                    </td>
-                    <td>
-                        {$vo.get_phone}
-                    </td>
+                    <td>{$vo.send_address}（{$vo.send_username}，{$vo.send_phone}）</td>
+                    <td>{$vo.get_address}（{$vo.get_username}，{$vo.get_phone}）</td>
                     <td>
                         {:get_wupin($vo['radio_value'],$vo['cid'],$vo['model_value'])}
                     </td>
