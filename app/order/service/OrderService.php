@@ -11,6 +11,7 @@
 namespace app\order\service;
 
 use app\order\model\OrderModel;
+use app\order\model\UserModel;
 
 class OrderService
 {
@@ -107,5 +108,19 @@ class OrderService
         
         return $pushs;
     }
-
+    
+    public function distributor()
+    {
+        $userModel = new UserModel();
+        
+        $distributor = $userModel::all(function($query){
+            $query->field('id,user_nickname,distributionCount');
+            $query->where('user_status', 1);
+            $query->where('user_distribution', 1);
+            $query->where('distribution_ing', 0);
+            $query->order('distributionCount ASC,create_time ASC');
+        });
+        
+        return $distributor;
+    }
 }

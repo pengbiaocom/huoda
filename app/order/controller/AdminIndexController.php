@@ -48,6 +48,53 @@ class AdminIndexController extends AdminBaseController
         $this->assign('pushs', $pushs);
         return $this->fetch();
     }
+    
+    public function select()
+    {   
+        $orderService = new OrderService();
+        $distributor = $orderService->distributor();
+        
+        $this->assign('distributor', $distributor);
+        return $this->fetch();
+    }
+    
+    public function print()
+    {
+        $distribution = [];
+        $distribution['distributions'] = $this->request->param('ids/a');
+        $distribution['uid'] = $this->request->param('distributor', 0, 'intval');
+        $distribution['status'] = 1;
+        $distribution['create_time'] = time();
+        
+        Db::startTrans();
+        try{
+            /* 修改配送员状态 */
+            if(Db::table("__USER__")->where('id', $distribution['uid'])->value('distribution_ing') == 0){
+                if(Db::table("__USER__")->where('id', $distribution['uid'])->update(['distribution_ing'=>1])){
+                    /* 修改指定订单状态 */
+                    if(Db::table("__ORDER__")->where('id', 'in', $distribution['distributions'])->update(['order_status'=>2])){
+                        /* 插入配送数据 */
+                        $distribution['distributions'] = json_encode($distribution['distributions']);
+                        if(Db::table("__DISTRIBUTION__")->insert($distribution)){
+                            echo 1;
+                        }else{
+                            exception('派单失败');
+                        }
+                    }
+                }else{
+                    exception('更新配送员状态失败，可能其他管理员为该配送员派发了订单，请在派单列表中刷新后再次尝试');
+                }
+            }else{
+                exception('配送员还在配送中');
+            }
+            
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            
+            dump($e);
+        }
+    }
 
     public function delete()
     {

@@ -5,7 +5,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="javascript:;">派单列表</a></li>
     </ul>
-    <form class="js-ajax-form" action="" method="post">
+    <form class="js-ajax-form-print" action="{:url('AdminIndex/print')}" method="post">
         <table class="table table-hover table-bordered table-list">
             <thead>
             <tr>
@@ -15,15 +15,9 @@
                     </label>
                 </th>
                 <th width="50">ID</th>
-                <th>发单地址</th>
-                <th>发单联系人</th>
-                <th>发单联系电话</th>
-                <th>收方地址</th>
-                <th>收方联系人</th>
-                <th>收方联系电话</th>
+                <th>发件信息</th>
+                <th>收件信息</th>
                 <th>物品信息</th>
-                <th>订单价格</th>
-                <th>预估时间</th>
                 <th>状态</th>
                 <th>备注信息</th>
                 <th>下单时间</th>
@@ -35,56 +29,55 @@
                         <input type="checkbox" checked="checked" class="js-check" data-yid="js-check-y" data-xid="js-check-x" name="ids[]" value="{$vo.id}" title="ID:{$vo.id}">
                     </td>
                     <td><b>{$vo.order_number}</b></td>
-                    <td>
-                        {$vo.send_address}
-                    </td>
-                    <td>
-                        {$vo.send_username}
-                    </td>
-                    <td>{$vo.send_phone}</td>
-                    <td>{$vo.get_address}</td>
-                    <td>
-                        {$vo.get_username}
-                    </td>
-                    <td>
-                        {$vo.get_phone}
-                    </td>
-                    <td>
-                        {:get_wupin($vo['radio_value'],$vo['cid'],$vo['model_value'])}
-                    </td>
-                    <td>
-                        ￥{$vo.order_total_price}
-                    </td>
-                    <td>
-                        {$vo.estimate_time}
-                    </td>
-                    <td>
-                        {:show_order_text($vo.order_status)}
-                    </td>
-                    <td>
-                        {$vo.remarks}
-                    </td>
-                    <td>
-                        {:date('Y-m-d H:i',$vo['create_time'])}
-                    </td>
+                    <td>{$vo.send_address}（{$vo.send_username}，{$vo.send_phone}）</td>
+                    <td>{$vo.get_address}（{$vo.get_username}，{$vo.get_phone}）</td>
+                    <td>{:get_wupin($vo['radio_value'],$vo['cid'],$vo['model_value'])}</td>
+                    <td>{:show_order_text($vo.order_status)}</td>
+                    <td>{$vo.remarks}</td>
+                    <td>{:date('Y-m-d H:i',$vo['create_time'])}</td>
                 </tr>
             </foreach>
         </table>
-        <ul class="pagination">{$page|default=''}</ul>
+        
+        <div style="text-align:center;padding: 20px;">
+            <input class="form-control" type="hidden" value="" name="distributor" id="js-distributor-id-input"/>
+        	<div class="btn btn-danger pushOrder">发起配送</div>
+        </div>
     </form>
 </div>
 <script src="__STATIC__/js/admin.js"></script>
 <script>
 
     function reloadPage(win) {
-        win.location.reload();
+        window.location.reload();
     }
 
     $(function () {
         setCookie("refersh_time", 0);
         Wind.use('ajaxForm', 'artDialog', 'iframeTools', function () {
-
+        	
         });
+        
+    	$(".pushOrder").click(function(){
+	        var selectedDistributorsId = $('#js-distributor-id-input').val();
+	        openIframeLayer("{:url('AdminIndex/select')}", '请选择派送员', {
+	            area: ['700px', '400px'],
+	            btn: ['确定', '取消'],
+	            yes: function (index, layero) {
+	                var iframeWin = window[layero.find('iframe')[0]['name']];
+	                var selectedDistributors = iframeWin.confirm();
+	                if (selectedDistributors.selectedDistributorsId.length == 0) {
+	                    layer.msg('请选择派送员');
+	                    return;
+	                }
+	                $('#js-distributor-id-input').val(selectedDistributors.selectedDistributorsId.join(','));
+	                layer.close(index); //如果设定了yes回调，需进行手工关闭
+	                
+	                $(".js-ajax-form-print").attr('target', '_blank');
+	                $(".js-ajax-form-print").submit();
+	            }
+	        });
+    	})
     });
 </script>
 </body>
