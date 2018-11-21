@@ -290,7 +290,7 @@ class OrderController extends RestBaseController
         $postData['form_id'] = $orderInfo['prepay_id'];
         $postData['data'] = [
             "keyword1"=>['value'=>$orderInfo['order_number']],
-            "keyword2"=>['value'=>'您从 '.$orderInfo['send_address'].' 到 '.$orderInfo['get_address'].' 的订单已下单成功，预计到达时间：'.date('Y-m-d H:i', time()+$orderInfo['estimate_time']*60.'。感谢使用货达服务，祝您生活愉快！')]
+            "keyword2"=>['value'=>'您从 '.$orderInfo['send_address'].' 到 '.$orderInfo['get_address'].' 的订单已下单成功，预计到达时间：'.date('Y-m-d H:i', time()+$orderInfo['estimate_time']*60).'。感谢使用货达服务，祝您生活愉快！']
         ];
         
         $header = ['content-type: application/json'];
