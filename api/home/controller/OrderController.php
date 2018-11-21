@@ -259,6 +259,8 @@ class OrderController extends RestBaseController
 		}
 		// 返回状态给微信服务器
 		if ($result !== false) {
+		    @$this->sendMessage($order_sn);
+		    
 			$str='<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
 		}else{
 			$str='<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[签名失败]]></return_msg></xml>';
@@ -266,6 +268,72 @@ class OrderController extends RestBaseController
 		echo $str;
 		return $result;
 	}
+    
+    /**
+    * 发送发货通知
+    * @date: 2018年11月21日 上午10:47:07
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function sendMessage($id)
+    {
+        $orderInfo = db("order")->where("order_number",$id)->find();
+        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx5f90b077ca92b8e7&secret=4078a37cf59c0691d1c4834a20ae53a7";
+        $getAccessToken = $this->http_curl($url);
+        $getAccessToken = json_decode($getAccessToken, true);
+        
+        $postUrl = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=".$getAccessToken['access_token'];
+        $postData = [];
+        $postData['touser'] = db("third_party_user")->where("user_id", $orderInfo['uid'])->value('openid');
+        $postData['template_id'] = 'eY2GkVS_vgeOwm-f636l8rAE6Zt95-6WQq-NJ74puaE';
+        $postData['form_id'] = $orderInfo['prepay_id'];
+        $postData['data'] = [
+            "keyword1"=>['value'=>$orderInfo['order_number']],
+            "keyword2"=>['value'=>'您从 '.$orderInfo['send_address'].' 到 '.$orderInfo['get_address'].' 的订单已下单成功，预计到达时间：'.date('Y-m-d H:i', time()+$orderInfo['estimate_time']*60.'。感谢使用货达服务，祝您生活愉快！')]
+        ];
+        
+        $header = ['content-type: application/json'];
+        
+        $this->http_curl($postUrl, json_encode($postData), $header);
+    }
+    
+    /**
+    * curl页面请求
+    * @date: 2018年11月21日 上午11:06:57
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    private function http_curl($url, $post = [], $header = ''){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);//https
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);//https
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        if(!empty($header)){
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        }
+        
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 30000);//10秒未响应就断开连接
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36');
+        
+        if(!empty($post)) {
+            curl_setopt($ch, CURLOPT_POST, 1);//post方式提交
+            if(is_array($post))
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));//要提交的信息
+            else
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $post);//要提交的信息
+        }
+        
+        $rs = curl_exec($ch); //执行cURL抓取页面内容
+        curl_close($ch);
+        
+        return $rs;
+    }
 	
 	/**
 	 * 显示指定的资源
