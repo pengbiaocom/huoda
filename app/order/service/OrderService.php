@@ -65,7 +65,7 @@ class OrderService
         $orders = $orderModel::all(function($query){
             $query->alias('order');
             $query->where('order.order_status', 1);
-            $query->order('order.create_time');
+            $query->order('order.create_time DESC');
         });
         
         $pushs = [];
@@ -140,6 +140,24 @@ class OrderService
             ->where('manager.status', '>', 0)
             ->order('manager.status asc')
             ->paginate(10);
+        
+        $orderModel = new OrderModel();
+        foreach ($manager as &$item){
+            $orders = $orderModel::all(function($query) use($item){
+                $query->alias('order');
+                $query->where('id', 'in', json_decode($item['distributions'], true));
+                $query->order('order.order_total_price DESC');
+            });
+            
+            $item['settlementPrice'] = 0;
+            foreach ($orders as $key=>$order){
+                if($key == 0){
+                    $item['settlementPrice'] += $order['order_total_price'];
+                }else{
+                    $item['settlementPrice'] += round($order['order_total_price']*0.5, 2);
+                }
+            }
+        }
         
         return $manager;
     }

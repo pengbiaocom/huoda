@@ -164,8 +164,32 @@ class AdminIndexController extends AdminBaseController
     {
         /* 配送中最高金额的总额+剩余订单的一半  */
         $param = $this->request->param();
+
+        $msg = "";
+        Db::startTrans();
+        try{
+            if(Db::table("__DISTRIBUTION__")->where('id', $param['id'])->update(['status'=>2])){
+                $distributions = Db::table("__DISTRIBUTION__")->where('id', $param['id'])->value('distributions');
+                $distributions = json_decode($distributions, true);
+                
+                if(!Db::table("__ORDER__")->where('id', 'in', $distributions)->update(['order_status'=>3])){
+                    exception('改变订单状态出现异常');
+                }
+            }else{
+                exception('本次结算失败');
+            } 
+            Db::commit();
+            $this->success('本次结算成功');
+        }catch (\Exception $e) {
+            Db::rollback();
+            $msg = $e->getMessage();
+        }
         
-        dump($param);
+        if(empty($msg)){
+            $this->success('结算成功');
+        }else{
+            $this->error($msg);
+        }
     }
     
     /**
@@ -175,11 +199,42 @@ class AdminIndexController extends AdminBaseController
     * @param: variable
     * @return:
     */
-    public function managerOrder()
+    public function managerorder()
     {
         $param = $this->request->param();
         
-        dump($param);
+        $distributions = db('distribution')->where('id', $param['id'])->value('distributions');
+        $distributions = json_decode($distributions, true);
+        
+        $orders = db('order')->where('id', 'in', $distributions)->select();
+        $this->assign('orders', $orders);
+        $this->assign('did', $param['id']);
+        return $this->fetch();
+    }
+    
+    /**
+    * 删除配送中的订单（不可逆转）
+    * @date: 2018年11月21日 下午3:46:37
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function deleteDistribution()
+    {
+        $param = $this->request->param();
+        $distributions = db('distribution')->where('id', $param['did'])->value('distributions');
+        $distributions = json_decode($distributions, true);
+        
+        $key = array_search($param['id'], $distributions);
+        
+        if ($key !== false) array_splice($distributions, $key, 1);
+        
+        if(db('distribution')->where('id', $param['did'])->update(['distributions'=>json_encode($distributions)])){
+            db('order')->where('id',$param['id'])->update(['order_status'=>1]);
+            $this->success('成功取消配送');
+        }else{
+            $this->error('取消配送失败');
+        }
     }
 
     /**

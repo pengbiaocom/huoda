@@ -13,6 +13,7 @@
                 <th>配送量</th>
                 <th>状态</th>
                 <th>出发时间</th>
+                <th>结算费用</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -25,9 +26,14 @@
                     <td>{:count($oeders)}</td>
                     <td><eq name="vo.status" value="1">配送中<else/>已完结</eq></td>
                     <td>{:date('Y-m-d H:i',$vo['create_time'])}</td>
+                    <td>{$vo['settlementPrice']}</td>
                     <td>
-						<a class="updateOrder" data-id="{$vo.id}">调整配单</a>
-						<a>支付费用</a>
+						<eq name="vo.status" value="1"><a class="updateOrder" data-id="{$vo.id}" style="cursor:pointer;">调整配单</a></eq>
+						<eq name="vo.status" value="1">
+							<a class="js-ajax-dialog-btn" data-msg="您确定结算本次配送吗" href="{:url('AdminIndex/distributionSettlement', array('id'=>$vo['id']))}">支付费用</a>
+						<else/>
+							已支付
+						</eq>
 					</td>
                 </tr>
             </foreach>
@@ -52,8 +58,8 @@
         
     	$(".updateOrder").click(function(){
 	        var distributorsId = $(this).data('id');
-	        openIframeLayer("{:url('AdminIndex/managerOrder')}?id="+distributorsId, '调整配送订单', {
-	            area: ['700px', '400px'],
+	        openIframeLayer("{:url('AdminIndex/managerorder')}?id="+distributorsId, '调整配送订单', {
+	            area: ['850px', '400px'],
 	            btn: ['关闭'],
 	            yes: function (index, layero) {
 	                layer.close(index); //如果设定了yes回调，需进行手工关闭
