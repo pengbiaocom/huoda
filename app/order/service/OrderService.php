@@ -12,6 +12,7 @@ namespace app\order\service;
 
 use app\order\model\OrderModel;
 use app\order\model\UserModel;
+use app\order\model\DistributionModel;
 
 class OrderService
 {
@@ -122,5 +123,20 @@ class OrderService
         });
         
         return $distributor;
+    }
+    
+    public function manager($filter)
+    {
+        $distributionModel = new DistributionModel();
+        
+        $manager = $distributionModel
+            ->alias('manager')
+            ->field('manager.*,user.user_nickname')
+            ->join('__USER__ user', 'manager.uid = user.id', 'left')
+            ->where('manager.status', '>', 0)
+            ->order('manager.status asc')
+            ->paginate(10);
+        
+        return $manager;
     }
 }

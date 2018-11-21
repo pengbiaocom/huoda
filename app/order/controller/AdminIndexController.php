@@ -133,7 +133,15 @@ class AdminIndexController extends AdminBaseController
     */
     public function manager()
     {
+        $param = $this->request->param();
         
+        $orderService = new OrderService();
+        $managers = $orderService->manager($param);
+        $managers->appends($param);
+        
+        $this->assign('managers', $managers->items());
+        $this->assign('page', $managers->render());
+        return $this->fetch();
     }
     
     /**

@@ -1,0 +1,67 @@
+<include file="public@header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="javascript:;">配送列表</a></li>
+    </ul>
+    <form class="js-ajax-form-print" action="{:url('AdminIndex/print')}" method="post">
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th>配送员</th>
+                <th>配送量</th>
+                <th>状态</th>
+                <th>出发时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <foreach name="managers" item="vo">
+                <tr>
+                    <td><b>{$vo.user_nickname}</b></td>
+                    <php>
+                    	$oeders = json_decode($vo['distributions'], true);
+                    </php>
+                    <td>{:count($oeders)}</td>
+                    <td><eq name="vo.status" value="1">配送中<else/>已完结</eq></td>
+                    <td>{:date('Y-m-d H:i',$vo['create_time'])}</td>
+                    <td>
+						<a class="updateOrder" data-id="{$vo.id}">调整配单</a>
+						<a>支付费用</a>
+					</td>
+                </tr>
+            </foreach>
+            
+			<ul class="pagination">{$page|default=''}</ul>
+        </table>
+        
+    </form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script>
+
+    function reloadPage(win) {
+        window.location.reload();
+    }
+
+    $(function () {
+        setCookie("refersh_time", 0);
+        Wind.use('ajaxForm', 'artDialog', 'iframeTools', function () {
+        	
+        });
+        
+    	$(".updateOrder").click(function(){
+	        var distributorsId = $(this).data('id');
+	        openIframeLayer("{:url('AdminIndex/select')}?id="+distributorsId, '调整配送订单', {
+	            area: ['700px', '400px'],
+	            btn: ['关闭'],
+	            yes: function (index, layero) {
+	                layer.close(index); //如果设定了yes回调，需进行手工关闭
+	                reloadPage();
+	            }
+	        });
+    	})
+    });
+</script>
+</body>
+</html>
