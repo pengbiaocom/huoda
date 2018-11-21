@@ -87,7 +87,7 @@ class AdminIndexController extends AdminBaseController
     * @param: variable
     * @return:
     */
-    public function print()
+    public function printorder()
     {
         $distribution = [];
         $distribution['distributions'] = $this->request->param('ids/a');
@@ -95,6 +95,7 @@ class AdminIndexController extends AdminBaseController
         $distribution['status'] = 1;
         $distribution['create_time'] = time();
         
+        $msg = "";
         Db::startTrans();
         try{
             /* 修改配送员状态 */
@@ -108,16 +109,14 @@ class AdminIndexController extends AdminBaseController
                         
                         if(Db::table("__ORDER__")->where($map)->update(['order_status'=>2])){
                             /* 处理需要打印的数据 */
-                            
+                        	$printData[] = Db::table("__ORDER__")->where("id", $item)->find();
                         }else{
                             exception('该订单存在问题，请确认后重新尝试');
                         }
                     }
                     
                     $distribution['distributions'] = json_encode($distribution['distributions']);
-                    if(Db::table("__DISTRIBUTION__")->insert($distribution)){
-                        echo 1;
-                    }else{
+                    if(!Db::table("__DISTRIBUTION__")->insert($distribution)){
                         exception('派单失败');
                     }
                 }else{
@@ -130,8 +129,14 @@ class AdminIndexController extends AdminBaseController
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
-            
-            echo $e->getMessage();
+            $msg = $e->getMessage();
+        }
+        
+        if(empty($msg)){
+        	$this->assign('prints', $printData);
+        	return $this->fetch();
+        }else{
+        	echo $msg;exit;
         }
     }
     
@@ -171,11 +176,15 @@ class AdminIndexController extends AdminBaseController
         Db::startTrans();
         try{
             if(Db::table("__DISTRIBUTION__")->where('id', $param['id'])->update(['status'=>2])){
-                $distributions = Db::table("__DISTRIBUTION__")->where('id', $param['id'])->value('distributions');
-                $distributions = json_decode($distributions, true);
+                $distributions = Db::table("__DISTRIBUTION__")->where('id', $param['id'])->find();
+                $distributionsArr = json_decode($distributions['distributions'], true);
                 
-                if(!Db::table("__ORDER__")->where('id', 'in', $distributions)->update(['order_status'=>3])){
+                if(!Db::table("__ORDER__")->where('id', 'in', $distributionsArr)->update(['order_status'=>3])){
                     exception('改变订单状态出现异常');
+                }
+                
+                if(!Db::table("__USER__")->where('id', $distributions['uid'])->update(['distribution_ing'=>0])){
+                	exception('重置配送员状态异常');
                 }
             }else{
                 exception('本次结算失败');

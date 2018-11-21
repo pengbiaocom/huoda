@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body onload="load()" style="font-size:10px;">
+	<foreach name="prints" item="vo">
+		<div style="text-align:left;padding:0px 60px;margin:0px;height:200px;">
+			<div>发件人：{$vo.send_username}（{$vo.send_phone}）</div>
+			<div>发件人地址：{$vo.send_address}</div>
+			<div>收件人：{$vo.get_username}（{$vo.get_phone}）</div>
+			<div>收件人地址：{$vo.get_address}</div>
+			<div>备注：{$vo.remarks|default='暂无备注'}</div>
+			<div></div>
+			<div></div>
+			<div>客服签名：</div>
+		</div>
+	</foreach>
+	
+<script type="text/javascript">
+function load(){
+  window.print();
+}
+</script>
+
+</body>
+</html>
