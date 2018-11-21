@@ -44,7 +44,8 @@ class OrderController extends RestBaseController
 			}else{
 				$where['order_status'] = $status;
 			}
-
+		}else{
+		    $where['order_status'] = ['GT', 0];
 		}
 
 		$list = Db::name("order")->where($where)->order('create_time desc')->limit(($page-1)*$limit, $limit)->select();
