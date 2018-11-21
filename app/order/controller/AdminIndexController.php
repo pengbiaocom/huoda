@@ -17,6 +17,8 @@ use think\Db;
 
 class AdminIndexController extends AdminBaseController
 {
+    private $config = [];
+    
     /**
     * 订单列表
     * @date: 2018年11月20日 下午5:39:24
@@ -250,25 +252,32 @@ class AdminIndexController extends AdminBaseController
         $orderModel = new OrderModel();
 
         if (isset($param['id'])) {
-            $id           = $this->request->param('id', 0, 'intval');
-            $result       = $orderModel->where(['id' => $id])->find();
+            $id = $this->request->param('id', 0, 'intval');
+            $result = $orderModel->where(['id' => $id])->find();
 
-            if($result['order_status']==0){
-                $data         = [
+            if($result['order_status'] == 0){
+                $data  = [
                     'object_id'   => $result['id'],
                     'create_time' => time(),
                     'table_name'  => 'order',
                     'name'        => $result['order_number'],
                     'user_id'     => cmf_get_current_admin_id()
                 ];
-                $resultPortal = $orderModel
-                    ->where(['id' => $id])
-                    ->update(['delete_time' => time(),'order_status'=>-1]);
-                if ($resultPortal) {
+                
+                if ($orderModel->where(['id' => $id])->update(['delete_time' => time(),'order_status'=>-1])) {
                     Db::name('recycleBin')->insert($data);
+                    $this->success("删除成功！", '');
+                }else{
+                    $this->error('删除失败！');
                 }
-                $this->success("删除成功！", '');
             }else{
+				$config = [
+					'appid'=>'wx5f90b077ca92b8e7',
+					'pay_mchid'=>'1517605631',
+					'pay_apikey'=>'6ba57bc32cfd5044f8710f09ff86c664'
+				];
+				$this->config = $config;
+				
                 if($this->refund($result)){
                     $data         = [
                         'object_id'   => $result['id'],
@@ -277,49 +286,14 @@ class AdminIndexController extends AdminBaseController
                         'name'        => $result['order_number'],
                         'user_id'     => cmf_get_current_admin_id()
                     ];
-                    $resultPortal = $orderModel
-                        ->where(['id' => $id])
-                        ->update(['delete_time' => time(),'order_status'=>-1]);
-                    if ($resultPortal) {
+                    
+                    if ($orderModel->where(['id' => $id])->update(['delete_time' => time(),'order_status'=>-1])) {
                         Db::name('recycleBin')->insert($data);
-                    }
-                    $this->success("删除成功！", '');
-                }
-            }
-
-
-        }
-
-        if (isset($param['ids'])) {
-            $ids     = $this->request->param('ids/a');
-            $recycle = $orderModel->where(['id' => ['in', $ids]])->select();
-            $result  = $orderModel->where(['id' => ['in', $ids]])->update(['delete_time' => time(),'order_status'=>-1]);
-            if ($result) {
-                foreach ($recycle as $value) {
-                    if($value['order_status']==0){
-                        $data = [
-                            'object_id'   => $value['id'],
-                            'create_time' => time(),
-                            'table_name'  => 'order',
-                            'name'        => $value['order_number'],
-                            'user_id'     => cmf_get_current_admin_id()
-                        ];
-                        Db::name('recycleBin')->insert($data);
+                        $this->success("删除成功！", '');
                     }else{
-                        if($this->refund($value)){
-                            $data = [
-                                'object_id'   => $value['id'],
-                                'create_time' => time(),
-                                'table_name'  => 'order',
-                                'name'        => $value['order_number'],
-                                'user_id'     => cmf_get_current_admin_id()
-                            ];
-                            Db::name('recycleBin')->insert($data);
-                        }
+                        $this->error('删除失败！');
                     }
-
                 }
-                $this->success("删除成功！", '');
             }
         }
     }

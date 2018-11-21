@@ -20,6 +20,7 @@ class OrderService
     public function adminOrderList($filter)
     {
         $where = [
+            'a.order_status' => ['>', 0],
             'a.create_time' => ['>=', 0],
             'a.delete_time' => 0
         ];
