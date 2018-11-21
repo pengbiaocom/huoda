@@ -99,15 +99,24 @@ class AdminIndexController extends AdminBaseController
             if(Db::table("__USER__")->where('id', $distribution['uid'])->value('distribution_ing') == 0){
                 if(Db::table("__USER__")->where('id', $distribution['uid'])->update(['distribution_ing'=>1])){
                     /* 修改指定订单状态 */
-                    if(Db::table("__ORDER__")->where('id', 'in', $distribution['distributions'])->update(['order_status'=>2])){
-                        /* 插入配送数据 */
-                        $distribution['distributions'] = json_encode($distribution['distributions']);
-                        if(Db::table("__DISTRIBUTION__")->insert($distribution)){
-                            /* 处理出数据返回给html操作打印 */
-                            echo 1;
+                    $printData = [];
+                    foreach ($distribution['distributions'] as $item){
+                        $map['status'] = 1;
+                        $map['id'] = $item;
+                        
+                        if(Db::table("__ORDER__")->where($map)->update(['order_status'=>2])){
+                            /* 处理需要打印的数据 */
+                            @$this->sendMessage($item);
                         }else{
-                            exception('派单失败');
+                            exception('该订单存在问题，请确认后重新尝试');
                         }
+                    }
+                    
+                    $distribution['distributions'] = json_encode($distribution['distributions']);
+                    if(Db::table("__DISTRIBUTION__")->insert($distribution)){
+                        echo 1;
+                    }else{
+                        exception('派单失败');
                     }
                 }else{
                     exception('更新配送员状态失败，可能其他管理员为该配送员派发了订单，请在派单列表中刷新后再次尝试');
@@ -122,6 +131,18 @@ class AdminIndexController extends AdminBaseController
             
             echo $e->getMessage();
         }
+    }
+    
+    /**
+    * 发送发货通知
+    * @date: 2018年11月21日 上午10:47:07
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    public function sendMessage($id)
+    {
+        
     }
     
     /**
@@ -153,7 +174,9 @@ class AdminIndexController extends AdminBaseController
     */
     public function managerOrder()
     {
+        $param = $this->request->param();
         
+        dump($param);
     }
 
     /**

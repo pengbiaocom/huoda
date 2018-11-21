@@ -1,0 +1,55 @@
+<include file="public@header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">选择</th>
+            <th>配送员名称</th>
+            <th>配送次数</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="distributor" item="vo">
+            <tr>
+                <td>
+                    <input type="radio" class="js-check" data-yid="js-check-y" data-xid="js-check-x" name="id" value="{$vo.id}">
+                </td>
+                <td>{$vo.user_nickname}</td>
+                <td>{$vo.distributionCount}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script>
+    $('.data-item-tr').click(function (e) {
+        var $this = $(this);
+        if ($(e.target).is('input')) {
+            return;
+        }
+
+        var $input = $this.find('input');
+        if ($input.is(':checked')) {
+            $input.prop('checked', false);
+        } else {
+            $input.prop('checked', true);
+        }
+    });
+
+    function confirm() {
+        var selectedDistributorsId   = [];
+        $('.js-check:checked').each(function () {
+            var $this = $(this);
+            selectedDistributorsId.push($this.val());
+        });
+
+        return {
+            selectedDistributorsId: selectedDistributorsId
+        };
+    }
+</script>
+</body>
+</html>

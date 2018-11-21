@@ -52,7 +52,7 @@
         
     	$(".updateOrder").click(function(){
 	        var distributorsId = $(this).data('id');
-	        openIframeLayer("{:url('AdminIndex/select')}?id="+distributorsId, '调整配送订单', {
+	        openIframeLayer("{:url('AdminIndex/managerOrder')}?id="+distributorsId, '调整配送订单', {
 	            area: ['700px', '400px'],
 	            btn: ['关闭'],
 	            yes: function (index, layero) {
