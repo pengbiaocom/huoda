@@ -50,7 +50,7 @@ class AdminIndexController extends AdminBaseController
     * @return:
     */
     public function push()
-    {
+    {        
         $baseSetting = cmf_get_option('base_setting');
         
         $orderService = new OrderService();
@@ -142,7 +142,23 @@ class AdminIndexController extends AdminBaseController
     */
     public function sendMessage($id)
     {
+        $orderInfo = db("order")->where("id",$id)->find();
+        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx5f90b077ca92b8e7&secret=4078a37cf59c0691d1c4834a20ae53a7";
+        $getAccessToken = $this->http_curl($url);
+        $getAccessToken = json_decode($getAccessToken, true);
         
+        $postUrl = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=".$getAccessToken['access_token'];
+        $postData = [];
+        $postData['touser'] = 'oIeYJ41Fcca3mdsVOvqjMIKH4B78';
+        $postData['template_id'] = 'T0UwEbA1aDbLNXeMDydcQxpGn_ooP2ikmcM5V4e0idE';
+        $postData['form_id'] = $orderInfo['prepay_id'];
+        $postData['data'] = [
+            "keyword1"=>['value'=>$orderInfo['send_username']],
+        ];
+        
+        $header = ['content-type: application/json'];
+        
+        dump($this->http_curl($postUrl, json_encode($postData), $header));exit;
     }
     
     /**
@@ -301,6 +317,43 @@ class AdminIndexController extends AdminBaseController
 
             return false;
         }
+    }
+    
+    /**
+    * curl页面请求
+    * @date: 2018年11月21日 上午11:06:57
+    * @author: onep2p <324834500@qq.com>
+    * @param: variable
+    * @return:
+    */
+    private function http_curl($url, $post = [], $header = ''){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);//https
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);//https
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        if(!empty($header)){
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        }
+        
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 30000);//10秒未响应就断开连接
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36');
+        
+        if(!empty($post)) {
+            curl_setopt($ch, CURLOPT_POST, 1);//post方式提交
+            if(is_array($post))
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));//要提交的信息
+            else
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $post);//要提交的信息
+        }
+        
+        $rs = curl_exec($ch); //执行cURL抓取页面内容
+        curl_close($ch);
+        
+        return $rs;
     }
 
     /**
