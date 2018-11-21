@@ -158,7 +158,7 @@ class AdminIndexController extends AdminBaseController
         
         $header = ['content-type: application/json'];
         
-        dump($this->http_curl($postUrl, json_encode($postData), $header));exit;
+        $this->http_curl($postUrl, json_encode($postData), $header);
     }
     
     /**

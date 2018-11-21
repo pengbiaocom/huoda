@@ -112,9 +112,8 @@ class OrderController extends RestBaseController
 				'trade_type'	=> 'JSAPI',
 				'openid'		=> $user['openid']
 			);
-			//更新数据库单号
-			db("order")->where(['id'=>$id])->update(['order_number'=>$unifiedorder['out_trade_no']]);
 			$unifiedorder['sign'] = self::makeSign($unifiedorder);
+			
 			//请求数据
 			$xmldata = self::array2xml($unifiedorder);
 			$url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
@@ -133,6 +132,8 @@ class OrderController extends RestBaseController
 			}
 
 			if(!empty($content['prepay_id'])){
+		      //更新数据库单号 和  支付prepay_id
+		      db("order")->where(['id'=>$id])->update(['prepay_id'=>$content['prepay_id'], 'order_number'=>$unifiedorder['out_trade_no']]);
 				return self::pay($content['prepay_id'],$unifiedorder['out_trade_no']);
 			}else{
 				return json(['code'=>1,'msg'=>'发起支付失败']);
