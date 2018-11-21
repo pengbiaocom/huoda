@@ -149,7 +149,7 @@ class AdminIndexController extends AdminBaseController
         
         $postUrl = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=".$getAccessToken['access_token'];
         $postData = [];
-        $postData['touser'] = 'oIeYJ41Fcca3mdsVOvqjMIKH4B78';
+        $postData['touser'] = db("third_party_user")->where("user_id", $orderInfo['uid'])->value('openid');
         $postData['template_id'] = 'T0UwEbA1aDbLNXeMDydcQxpGn_ooP2ikmcM5V4e0idE';
         $postData['form_id'] = $orderInfo['prepay_id'];
         $postData['data'] = [
