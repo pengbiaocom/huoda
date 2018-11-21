@@ -319,7 +319,7 @@ class OrderController extends RestBaseController
 				}else{
 					return json(['code'=>1,'msg'=>'订单取消失败']);
 				}
-			}else if($info['order_status']>=0){
+			}else if($info['order_status']==1 && $info['create_time']+600 >= time()){
 				//处理退款接口
 				$config = [
 					'appid'=>'wx5f90b077ca92b8e7',
