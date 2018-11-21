@@ -101,10 +101,14 @@ class OrderService
             $last_names = array_column($distance,'distance');
             array_multisort($last_names,SORT_ASC,$distance);
             
-            $pushs[] = $distance[0];
-            $ids[] = $distance[0]['id'];
-            $startLng = $distance[0]['lng'];
-            $startLat = $distance[0]['lat'];
+            if(count($distance) > 0){
+                $pushs[] = $distance[0];
+                $ids[] = $distance[0]['id'];
+                $startLng = $distance[0]['lng'];
+                $startLat = $distance[0]['lat'];                
+            }else{
+                break;
+            }
         }
         
         return $pushs;

@@ -132,8 +132,8 @@ class OrderController extends RestBaseController
 			}
 
 			if(!empty($content['prepay_id'])){
-		      //更新数据库单号 和  支付prepay_id
-		      db("order")->where(['id'=>$id])->update(['prepay_id'=>$content['prepay_id'], 'order_number'=>$unifiedorder['out_trade_no']]);
+		        //更新数据库单号 和  支付prepay_id
+		        db("order")->where(['id'=>$id])->update(['prepay_id'=>$content['prepay_id'], 'order_number'=>$unifiedorder['out_trade_no']]);
 				return self::pay($content['prepay_id'],$unifiedorder['out_trade_no']);
 			}else{
 				return json(['code'=>1,'msg'=>'发起支付失败']);
@@ -318,7 +318,7 @@ class OrderController extends RestBaseController
 				}else{
 					return json(['code'=>1,'msg'=>'订单取消失败']);
 				}
-			}else if($info['order_status']==1 && $info['create_time']+600 >= time()){
+			}else if($info['order_status']==1){
 				//处理退款接口
 				$config = [
 					'appid'=>'wx5f90b077ca92b8e7',

@@ -50,7 +50,7 @@ class AdminIndexController extends AdminBaseController
     * @return:
     */
     public function push()
-    {        
+    {
         $baseSetting = cmf_get_option('base_setting');
         
         $orderService = new OrderService();
@@ -101,7 +101,7 @@ class AdminIndexController extends AdminBaseController
                     /* 修改指定订单状态 */
                     $printData = [];
                     foreach ($distribution['distributions'] as $item){
-                        $map['status'] = 1;
+                        $map['order_status'] = 1;
                         $map['id'] = $item;
                         
                         if(Db::table("__ORDER__")->where($map)->update(['order_status'=>2])){
@@ -154,6 +154,14 @@ class AdminIndexController extends AdminBaseController
         $postData['form_id'] = $orderInfo['prepay_id'];
         $postData['data'] = [
             "keyword1"=>['value'=>$orderInfo['send_username']],
+            "keyword2"=>['value'=>$orderInfo['order_number']],
+            "keyword3"=>['value'=>$orderInfo['send_phone']],
+            "keyword4"=>['value'=>'货达（汽配）'],
+            "keyword5"=>['value'=>$orderInfo['get_username']],
+            "keyword6"=>['value'=>$orderInfo['get_phone']],
+            "keyword7"=>['value'=>$orderInfo['get_address']],
+            "keyword8"=>['value'=>date('Y-m-d H:i', time()+$orderInfo['estimate_time']*60)],
+            "keyword9"=>['value'=>$orderInfo['remarks']]
         ];
         
         $header = ['content-type: application/json'];
