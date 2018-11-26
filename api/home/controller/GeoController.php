@@ -65,7 +65,7 @@ class GeoController extends RestBaseController
         
         if($rs['errcode'] == 0){
             $calculated['distance'] = $rs['data']['paths'][0]['distance'];
-            $calculated['duration'] = round($rs['data']['paths'][0]['duration']/60) + 30;
+            $calculated['duration'] = round($rs['data']['paths'][0]['distance']/600) + 30;
             $calculated['price'] = $this->priceCalculation($calculated['distance'], $calculated['duration']-30);
         }else{
             $startLng = '104.025652';
@@ -82,7 +82,7 @@ class GeoController extends RestBaseController
             $distance = 2*asin(sqrt(pow(sin($a/2),2)+cos($radLat1)*cos($radLat2)*pow(sin($b/2),2)))*6378137;
             
             $calculated['distance'] = round($distance);
-            $calculated['duration'] = round($distance / 350) + 30;
+            $calculated['duration'] = round($distance / 600) + 30;
             $calculated['price'] = $this->priceCalculation($calculated['distance'], $calculated['duration']-30);
         }
         
