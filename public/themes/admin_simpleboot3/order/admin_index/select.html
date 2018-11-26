@@ -7,6 +7,7 @@
         <tr>
             <th width="50">选择</th>
             <th>配送员名称</th>
+            <th>联系电话</th>
             <th>配送次数</th>
         </tr>
         </thead>
@@ -16,7 +17,8 @@
                 <td>
                     <input type="radio" class="js-check" data-yid="js-check-y" data-xid="js-check-x" name="id" value="{$vo.id}">
                 </td>
-                <td>{$vo.user_nickname}</td>
+                <td><empty name="vo.user_login">{$vo.user_nickname}<else/>{$vo.user_login}</empty></td>
+                <td>{$vo.mobile}</td>
                 <td>{$vo.distributionCount}</td>
             </tr>
         </foreach>

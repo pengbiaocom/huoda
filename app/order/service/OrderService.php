@@ -120,7 +120,7 @@ class OrderService
         $userModel = new UserModel();
         
         $distributor = $userModel::all(function($query){
-            $query->field('id,user_nickname,distributionCount');
+            $query->field('id,user_nickname,user_login,mobile,distributionCount');
             $query->where('user_status', 1);
             $query->where('user_distribution', 1);
             $query->where('distribution_ing', 0);

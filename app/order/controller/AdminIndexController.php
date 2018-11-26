@@ -107,7 +107,7 @@ class AdminIndexController extends AdminBaseController
                         $map['order_status'] = 1;
                         $map['id'] = $item;
                         
-                        if(Db::table("__ORDER__")->where($map)->update(['order_status'=>2])){
+                        if(Db::table("__ORDER__")->where($map)->update(['order_status'=>2, 'distribution'=>$distribution['uid']])){
                             /* 处理需要打印的数据 */
                         	$printData[] = Db::table("__ORDER__")->where("id", $item)->find();
                         }else{
@@ -184,7 +184,8 @@ class AdminIndexController extends AdminBaseController
                 }else{
                     if(!Db::table("__USER__")->where('id', $distributions['uid'])->update(['distribution_ing'=>0])){
                         exception('重置配送员状态异常');
-                    }                    
+                    }
+                    Db::table("__USER__")->where('id', $distributions['uid'])->setInc('distributionCount', 1);
                 }
             }else{
                 exception('本次结算失败');
@@ -241,7 +242,7 @@ class AdminIndexController extends AdminBaseController
         if ($key !== false) array_splice($distributions, $key, 1);
         
         if(db('distribution')->where('id', $param['did'])->update(['distributions'=>json_encode($distributions)])){
-            db('order')->where('id',$param['id'])->update(['order_status'=>1]);
+            db('order')->where('id',$param['id'])->update(['order_status'=>1, 'distribution'=>0]);
             $this->success('成功取消配送');
         }else{
             $this->error('取消配送失败');
