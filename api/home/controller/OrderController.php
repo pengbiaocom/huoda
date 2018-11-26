@@ -345,7 +345,13 @@ class OrderController extends RestBaseController
 		$order_id = $this->request->param("id",3);
 
 		if(empty($order_id)) return json(['code'=>1,'msg'=>'缺少参数']);
-		$info = db("order")->where("id",$order_id)->find();
+		$info = db("order")
+		  ->alias('order')
+		  ->field("order.*,user.user_login,user.mobile")
+		  ->join('__USER__ user', 'order.distribution = user.id', 'left')
+		  ->where("order.id",$order_id)
+		  ->find();
+		
 		if(!empty($info)){
 			$info['cargo_name'] = db("admin_cargo")->where("id",$info['cid'])->value("name");
 			$comSetting = cmf_get_option('base_setting');
