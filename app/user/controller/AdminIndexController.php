@@ -112,9 +112,12 @@ class AdminIndexController extends AdminBaseController
     {
         $id = $this->request->param('id', 0, 'intval');
         $role = $this->request->param('role_id', 0, 'intval');
+        $user_login = $this->request->param('user_login');
+        $mobile = $this->request->param('mobile');
+        
         
         if ($id) {
-            $result = Db::name("user")->where(["id" => $id])->setField('user_distribution', $role);
+            $result = Db::name("user")->where(["id" => $id])->update(['user_distribution' => $role, 'user_login' => $user_login, 'mobile' => $mobile]);
             if ($result) {
                 $this->success("会员分组成功！", "adminIndex/index");
             } else {

@@ -313,8 +313,13 @@ class SettingController extends AdminBaseController
         if (!empty($content)) {
             return $content;
         }
-        
-        $categories = Db::name('UserFaq')->order(["status" => "ASC", "create_time" => "DESC"])->paginate(10);
+
+        $categories = Db::name('UserFaq')
+            ->alias('faq')
+            ->field("faq.*,user.user_nickname")
+            ->join('__USER__ user', 'faq.uid = user.id', 'left')
+            ->order(["faq.status" => "ASC", "faq.create_time" => "DESC"])
+            ->paginate(10);
         $page = $categories->render();
         
         $this->assign("page", $page);

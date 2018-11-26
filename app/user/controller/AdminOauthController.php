@@ -59,7 +59,7 @@ class AdminOauthController extends AdminBaseController
         $oauthUserQuery = Db::name('third_party_user');
 
         $lists = $oauthUserQuery
-            ->field('a.*,u.user_nickname,u.sex,u.avatar')
+            ->field('a.*,u.user_nickname,u.user_login,u.mobile,u.sex,u.avatar')
             ->alias('a')
             ->join('__USER__ u', 'a.user_id = u.id')
             ->where(array('status'=>1,'user_distribution'=>1))

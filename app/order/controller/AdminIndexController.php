@@ -181,10 +181,10 @@ class AdminIndexController extends AdminBaseController
                 
                 if(!Db::table("__ORDER__")->where('id', 'in', $distributionsArr)->update(['order_status'=>3])){
                     exception('改变订单状态出现异常');
-                }
-                
-                if(!Db::table("__USER__")->where('id', $distributions['uid'])->update(['distribution_ing'=>0])){
-                	exception('重置配送员状态异常');
+                }else{
+                    if(!Db::table("__USER__")->where('id', $distributions['uid'])->update(['distribution_ing'=>0])){
+                        exception('重置配送员状态异常');
+                    }                    
                 }
             }else{
                 exception('本次结算失败');

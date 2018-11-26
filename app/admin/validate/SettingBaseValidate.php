@@ -17,12 +17,12 @@ class SettingBaseValidate extends Validate
     protected $rule = [
         'options.dispatch_max_num' => 'require',
         'options.big_max_num' => 'require',
-        'options.notice' => 'require'
+        'options.del_max_time' => 'require'
     ];
 
     protected $message = [
         'options.dispatch_max_num.require' => '出车最大送单量不能为空',
         'options.big_max_num.require' => '出车最大运送大件量不能为空',
-        'options.notice.require' => '公告不能为空'
+        'options.del_max_time.require' => '退款延时时间不能为空'
     ];
 }
