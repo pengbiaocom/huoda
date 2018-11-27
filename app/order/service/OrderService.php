@@ -95,6 +95,12 @@ class OrderService
                     $data = $order;
                     $data['distance'] = round(2*asin(sqrt(pow(sin($a/2),2)+cos($radLat1)*cos($radLat2)*pow(sin($b/2),2)))*6378137);
                     
+                    if(count($pushs) > 0) {
+                        $data['distance_'] = '+'.round($data['distance']/1000,2).'KM';
+                    }else{
+                        $data['distance_'] = '-';
+                    }
+                    
                     $distance[] = $data;
                 }
             }

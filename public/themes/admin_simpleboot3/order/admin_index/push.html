@@ -18,6 +18,7 @@
                 <th>发件信息</th>
                 <th>收件信息</th>
                 <th>物品信息</th>
+                <th>里程</th>
                 <th>状态</th>
                 <th>备注信息</th>
                 <th>下单时间</th>
@@ -32,6 +33,7 @@
                     <td>{$vo.send_address}（{$vo.send_username}，{$vo.send_phone}）</td>
                     <td>{$vo.get_address}（{$vo.get_username}，{$vo.get_phone}）</td>
                     <td>{:get_wupin($vo['radio_value'],$vo['cid'],$vo['model_value'])}</td>
+                    <td>{$vo.distance_}</td>
                     <td>{:show_order_text($vo.order_status)}</td>
                     <td>{$vo.remarks}</td>
                     <td>{:date('Y-m-d H:i',$vo['create_time'])}</td>
