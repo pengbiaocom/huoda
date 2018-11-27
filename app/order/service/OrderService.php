@@ -98,7 +98,7 @@ class OrderService
                     if(count($pushs) > 0) {
                         $data['distance_'] = '+'.round($data['distance']/1000,2).'KM';
                     }else{
-                        $data['distance_'] = '-';
+                        $data['distance_'] = round($data['distance']/1000,2).'KM';
                     }
                     
                     $distance[] = $data;
