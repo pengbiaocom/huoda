@@ -179,7 +179,7 @@ class AdminIndexController extends AdminBaseController
                 $distributions = Db::table("__DISTRIBUTION__")->where('id', $param['id'])->find();
                 $distributionsArr = json_decode($distributions['distributions'], true);
                 
-                if(!Db::table("__ORDER__")->where('id', 'in', $distributionsArr)->update(['order_status'=>3])){
+                if(count($distributionsArr) > 0 && !Db::table("__ORDER__")->where('id', 'in', $distributionsArr)->update(['order_status'=>3])){
                     exception('改变订单状态出现异常');
                 }else{
                     if(!Db::table("__USER__")->where('id', $distributions['uid'])->update(['distribution_ing'=>0])){
