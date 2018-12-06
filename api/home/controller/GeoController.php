@@ -43,6 +43,7 @@ class GeoController extends RestBaseController
                 $response['distance'] = $distance['distance'];
                 $response['duration'] = $distance['duration'];
                 $response['price'] = $distance['price'];
+//                cmf_log(json_encode($response),CMF_ROOT . 'data/runtime/log.txt');
                 $this->success("获取成功!", $response);
             }else{
                 $this->error("获取失败");

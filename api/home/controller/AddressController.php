@@ -28,12 +28,18 @@ class AddressController extends RestBaseController
 					$where['order_status'] = array('GT', 0);
 					$where['uid'] = $uid;
 					$data = Db::name("order")->where($where)->order('create_time desc')->find();
+					if($data){
+						$data['order_total_price'] = $data['order_total_price']+5;
+					}
 					break;
 				case 1:
 					$where['order_status'] = array('GT', 0);
 					if($uid > 0) $where['uid'] = $uid;
 					$data = Db::name("order")->where($where)->order('create_time desc')->select();
 					if(!empty($data)){
+						foreach($data as $key=>$row){
+							$data[$key]['order_total_price'] = $row['order_total_price']+5;
+						}
 						$data = json_decode($data,true);
 					}
 					break;
@@ -41,6 +47,9 @@ class AddressController extends RestBaseController
 					$where['order_status'] = array('GT', 0);
 					$where['uid'] = $uid;
 					$data = Db::name("order")->where($where)->order('create_time desc')->find();
+					if($data){
+						$data['order_total_price'] = $data['order_total_price']+5;
+					}
 					break;
 			}
 		}
