@@ -18,6 +18,7 @@ use think\Db;
 class AdminIndexController extends AdminBaseController
 {
     private $config = [];
+    private $amapKey = '51f64f3a0a6905e0503ceefab4ce0ceb';
     
     /**
     * 订单列表
@@ -109,7 +110,14 @@ class AdminIndexController extends AdminBaseController
                         
                         if(Db::table("__ORDER__")->where($map)->update(['order_status'=>2, 'distribution'=>$distribution['uid']])){
                             /* 处理需要打印的数据 */
-                        	$printData[] = Db::table("__ORDER__")->where("id", $item)->find();
+                            $printInfo = Db::table("__ORDER__")->where("id", $item)->find();
+                            $location = $printInfo['lng'].','.$printInfo['lat'];
+                            $url = "https://restapi.amap.com/v3/geocode/regeo?key=".$this->amapKey."&location=".$location."&extensions=base&batch=false&roadlevel=0";
+                            $rs = $this->http_curl($url);
+                            $rs = json_decode($rs, true);
+                            
+                            $printInfo['address'] = $rs['regeocode']['formatted_address'];
+                        	$printData[] = $printInfo;
                         }else{
                             exception('该订单存在问题，请确认后重新尝试');
                         }
@@ -138,6 +146,24 @@ class AdminIndexController extends AdminBaseController
         }else{
         	echo $msg;exit;
         }
+    }
+    
+    private function http_curl($url){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);//https
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);//https
+        curl_setopt($ch, CURLOPT_URL, $url);
+        
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 30000);//10秒未响应就断开连接
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36');
+        
+        $rs = curl_exec($ch); //执行cURL抓取页面内容
+        curl_close($ch);
+        
+        return $rs;
     }
     
     /**

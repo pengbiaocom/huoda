@@ -145,7 +145,7 @@ class OrderService
             ->field('manager.*,user.user_nickname')
             ->join('__USER__ user', 'manager.uid = user.id', 'left')
             ->where('manager.status', '>', 0)
-            ->order('manager.status asc')
+            ->order('manager.status asc,create_time desc')
             ->paginate(10);
         
         $orderModel = new OrderModel();
