@@ -21,7 +21,11 @@ class AddressController extends RestBaseController
 		$uid = $this->request->param("uid", 0, 'intval');
 		$order_number = $this->request->param("order_number",'');
 		if($order_number !=''){
-			$data = Db::name("order")->where("order_number",$order_number)->order('create_time desc')->find();
+		    $where['order_status'] = array('GT', 0);
+		    $where['uid'] = $uid;
+		    $where['order_number'] = $order_number;
+		    
+			$data = Db::name("order")->where($where)->order('create_time desc')->find();
 		}else{
 			switch ($type) {
 				case 0:

@@ -13,6 +13,7 @@ namespace api\home\controller;
 use cmf\controller\RestBaseController;
 use function Qiniu\json_decode;
 use Phpml\ModelManager;
+use think\Db;
 
 class GeoController extends RestBaseController
 {
@@ -27,8 +28,17 @@ class GeoController extends RestBaseController
 			$location['geocodes'][0]['location'] = $getLocation;
 		}else{
 			$address = $this->request->param('address');
-			$rs = $this->http_curl("https://restapi.amap.com/v3/geocode/geo?key=".$this->amapKey."&address=".$address."&city=510100");
-			$location = json_decode($rs, true);			
+			
+		    $where['order_status'] = array('GT', 0);
+		    $where['get_address'] = $address;
+		    $data = Db::name("order")->where($where)->order('create_time desc')->find();
+		    if($data){
+		        $location['status'] = 1;
+		        $location['geocodes'][0]['location'] = $data['lng'].','.$data['lat'];
+		    }else{
+		        $rs = $this->http_curl("https://restapi.amap.com/v3/geocode/geo?key=".$this->amapKey."&address=".$address."&city=510100");
+		        $location = json_decode($rs, true);		        
+		    }		
 		}
 
         if($location['status'] == 1){
