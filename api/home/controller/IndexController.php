@@ -703,7 +703,7 @@ class IndexController extends RestBaseController
         ];
 
         //$classifier = new NaiveBayes();
-        $classifier = new SVC(Kernel::LINEAR, $cost=1000);
+        $classifier = new SVC(Kernel::LINEAR, $cost=1.0);
         $classifier->train($samples, $labels);
         $filepath = "/home/wwwroot/huoda/model";
         $modelManager = new ModelManager();
