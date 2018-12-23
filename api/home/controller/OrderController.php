@@ -87,6 +87,8 @@ class OrderController extends RestBaseController
 		$data['return_goods'] = $this->request->param("return_goods",0);
 		$data['lat'] = $this->request->param("lat");
 		$data['lng'] = $this->request->param("lng");
+		$data['dai_money'] = $this->request->param("dai_money");
+		$data['is_dai'] = $this->request->param("is_dai");
 
 //		$data['order_total_price'] = 0.01;
 
