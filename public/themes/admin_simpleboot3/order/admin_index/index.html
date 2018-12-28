@@ -27,8 +27,10 @@
                 <th>发件信息</th>
                 <th>收件信息</th>
                 <th>物品信息</th>
+                <th>待退货</th>
+                <th>带货款（元）</th>
                 <th>订单价格</th>
-                <th>预估时间</th>
+                <th>预估时间（分钟）</th>
                 <th>状态</th>
                 <th>备注信息</th>
                 <th>下单时间</th>
@@ -42,6 +44,20 @@
                     <td>{$vo.get_address}（{$vo.get_username}，{$vo.get_phone}）</td>
                     <td>
                         {:get_wupin($vo['radio_value'],$vo['cid'],$vo['model_value'])}
+                    </td>
+                    <td>
+                    	<eq name="vo.return_goods" value="1">
+                    	是
+                    	<else/>
+                    	否
+                    	</eq>
+                    </td>
+                    <td>
+                    	<eq name="vo.is_dai" value="1">
+                    	{$vo.dai_money}
+                    	<else/>
+                    	0.00
+                    	</eq>
                     </td>
                     <td>
                         ￥{$vo.order_total_price}

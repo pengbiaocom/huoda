@@ -11,6 +11,8 @@
 			<div>发件人地址：{$vo.send_address}</div>
 			<div>收件人：{$vo.get_username}（{$vo.get_phone}）</div>
 			<div>收件人地址：{$vo.get_address}（{$vo.address}）</div>
+			<eq name="vo.return_goods" value="1"><div>带退货</div></eq>
+			<eq name="vo.is_dai" value="1"><div>带退款：{$vo.dai_money}元</div></eq>
 			<div>备注：{$vo.remarks|default='暂无备注'}</div>
 			<div></div>
 			<div></div>
