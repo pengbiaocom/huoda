@@ -20,7 +20,7 @@ class OrderService
     public function adminOrderList($filter)
     {
         $where = [
-            'a.order_status' => ['>', 0],
+            'a.order_status' => ['>=', 0],
             'a.create_time' => ['>=', 0],
             'a.delete_time' => 0
         ];
@@ -65,7 +65,7 @@ class OrderService
         $orderModel = new OrderModel();
         $orders = $orderModel::all(function($query){
             $query->alias('order');
-            $query->where('order.order_status', 1);
+            $query->where('order.order_status', 0);
             $query->order('order.create_time DESC');
         });
         
@@ -104,7 +104,7 @@ class OrderService
                     $distance[] = $data;
                 }
             }
-            
+
             $last_names = array_column($distance,'distance');
             array_multisort($last_names,SORT_ASC,$distance);
             

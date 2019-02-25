@@ -80,11 +80,11 @@
 
                     </td>
                     <td>
-                        <eq name="vo.order_status" value="1">
+                        <in name="vo.order_status" value="0,1">
                         	<a href="{:url('AdminIndex/delete',array('id'=>$vo['id']))}" class="js-ajax-delete">取消订单</a>
                         <else/>
                         	禁止取消
-                        </eq>
+                        </in>
                     </td>
                 </tr>
             </foreach>

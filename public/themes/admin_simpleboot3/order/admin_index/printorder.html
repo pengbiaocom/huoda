@@ -6,7 +6,7 @@
 </head>
 <body onload="load()" style="font-size:10px;">
 	<foreach name="prints" item="vo">
-		<div style="text-align:left;padding:-60px 60px 0px 60px;margin:0px;height:200px;">
+		<div style="text-align:left;padding:-60px 50px 0px 50px;margin:0px;height:200px;">
 			<div>发件人：{$vo.send_username}（{$vo.send_phone}）</div>
 			<div>发件人地址：{$vo.send_address}</div>
 			<div>收件人：{$vo.get_username}（{$vo.get_phone}）</div>
@@ -14,6 +14,7 @@
 			<eq name="vo.return_goods" value="1"><div>带退货</div></eq>
 			<eq name="vo.is_dai" value="1"><div>带退款：{$vo.dai_money}元</div></eq>
 			<div>备注：{$vo.remarks|default='暂无备注'}</div>
+			<img alt="" src="https://www.qianlishitou.com/{$vo.code_url}">
 			<div></div>
 			<div></div>
 			<div>客户签名：</div>

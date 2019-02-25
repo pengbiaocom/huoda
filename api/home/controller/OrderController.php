@@ -101,46 +101,48 @@ class OrderController extends RestBaseController
 		$user = db("third_party_user")->where("user_id",$data['uid'])->find();
 
 		if($id = db("order")->insertGetId($data)){
-			$config = $this->config;
-			//统一下单参数构造
-			$unifiedorder = array(
-				'appid'			=> $config['appid'],
-				'mch_id'		=> $config['pay_mchid'],
-				'nonce_str'		=> self::getNonceStr(),
-				'body'			=> '货达',
-				'out_trade_no'	=> 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
-				'total_fee'		=> $data['order_total_price'] * 100,
-				'spbill_create_ip'	=> get_client_ip(),
-				'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
-				'trade_type'	=> 'JSAPI',
-				'openid'		=> $user['openid']
-			);
-			$unifiedorder['sign'] = self::makeSign($unifiedorder);
+// 			$config = $this->config;
+// 			//统一下单参数构造
+// 			$unifiedorder = array(
+// 				'appid'			=> $config['appid'],
+// 				'mch_id'		=> $config['pay_mchid'],
+// 				'nonce_str'		=> self::getNonceStr(),
+// 				'body'			=> '货达',
+// 				'out_trade_no'	=> 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
+// 				'total_fee'		=> $data['order_total_price'] * 100,
+// 				'spbill_create_ip'	=> get_client_ip(),
+// 				'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
+// 				'trade_type'	=> 'NATIVE',
+// 				'openid'		=> $user['openid']
+// 			);
+// 			$unifiedorder['sign'] = self::makeSign($unifiedorder);
 			
-			//请求数据
-			$xmldata = self::array2xml($unifiedorder);
-			$url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
-			$res = self::curl_post_ssl($url, $xmldata);
-			if(!$res){
-				self::return_err("Can't connect the server");
-			}
+// 			//请求数据
+// 			$xmldata = self::array2xml($unifiedorder);
+// 			$url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+// 			$res = self::curl_post_ssl($url, $xmldata);
+// 			dump($res);exit;
+// 			if(!$res){
+// 				self::return_err("Can't connect the server");
+// 			}
 
-			$content = self::xml2array($res);
+// 			$content = self::xml2array($res);
 
-			if(strval($content['result_code']) == 'FAIL'){
-				self::return_err(strval($content['err_code_des']));
-			}
-			if(strval($content['return_code']) == 'FAIL'){
-				self::return_err(strval($content['return_msg']));
-			}
+// 			if(strval($content['result_code']) == 'FAIL'){
+// 				self::return_err(strval($content['err_code_des']));
+// 			}
+// 			if(strval($content['return_code']) == 'FAIL'){
+// 				self::return_err(strval($content['return_msg']));
+// 			}
 
-			if(!empty($content['prepay_id'])){
+// 			if(!empty($content['prepay_id'])){
 		        //更新数据库单号 和  支付prepay_id
-		        db("order")->where(['id'=>$id])->update(['prepay_id'=>$content['prepay_id'], 'order_number'=>$unifiedorder['out_trade_no']]);
-				return self::pay($content['prepay_id'],$unifiedorder['out_trade_no']);
-			}else{
-				return json(['code'=>1,'msg'=>'发起支付失败']);
-			}
+// 		        db("order")->where(['id'=>$id])->update(['prepay_id'=>$content['prepay_id'], 'order_number'=>$unifiedorder['out_trade_no']]);
+// 				return self::pay($content['prepay_id'],$unifiedorder['out_trade_no']);
+// 			}else{
+// 				return json(['code'=>1,'msg'=>'发起支付失败']);
+// 			}
+		    return json(['code'=>0, 'msg'=>'调用成功', 'data'=>[]]);
 		}else{
 			return json(['code'=>1,'msg'=>'服务器繁忙']);
 		}
@@ -253,7 +255,11 @@ class OrderController extends RestBaseController
 			$openid = $data['openid'];					//付款人openID
 			$total_fee = $data['total_fee'];			//付款金额
 			$transaction_id = $data['transaction_id']; 	//微信支付流水号
-			db("order")->where(['order_number'=>$order_sn])->update(['order_status'=>1]);
+			//db("order")->where(['order_number'=>$order_sn])->update(['order_status'=>1]);
+			
+			//删除已经支付完成的二维码（节省空间）
+			$imgsrc = 'qrcode/'.$order_sn.'.png';
+			@unlink($imgsrc);
 		}else{
 			$out_trade_no =  explode('_',$data['out_trade_no']);
 			$order_sn = $out_trade_no[0];			//订单单号

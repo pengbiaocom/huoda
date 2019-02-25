@@ -14,10 +14,15 @@ use cmf\controller\AdminBaseController;
 use app\order\service\OrderService;
 use app\order\model\OrderModel;
 use think\Db;
+use cmf\phpqrcode\QRcode;
 
 class AdminIndexController extends AdminBaseController
 {
-    private $config = [];
+    private $config = [
+        'appid'=>'wx5f90b077ca92b8e7',
+        'pay_mchid'=>'1517605631',
+        'pay_apikey'=>'6ba57bc32cfd5044f8710f09ff86c664'
+    ];
     private $amapKey = '51f64f3a0a6905e0503ceefab4ce0ceb';
     
     /**
@@ -105,7 +110,7 @@ class AdminIndexController extends AdminBaseController
                     /* 修改指定订单状态 */
                     $printData = [];
                     foreach ($distribution['distributions'] as $item){
-                        $map['order_status'] = 1;
+                        $map['order_status'] = 0;
                         $map['id'] = $item;
                         
                         if(Db::table("__ORDER__")->where($map)->update(['order_status'=>2, 'distribution'=>$distribution['uid']])){
@@ -115,9 +120,47 @@ class AdminIndexController extends AdminBaseController
                             $url = "https://restapi.amap.com/v3/geocode/regeo?key=".$this->amapKey."&location=".$location."&extensions=base&batch=false&roadlevel=0";
                             $rs = $this->http_curl($url);
                             $rs = json_decode($rs, true);
-                            
                             $printInfo['address'] = $rs['regeocode']['formatted_address'];
-                        	$printData[] = $printInfo;
+                            
+                            /* 加入付款二维码 */
+                            $config = $this->config;
+                			//统一下单参数构造
+                			$unifiedorder = array(
+                				'appid'			=> $config['appid'],
+                				'mch_id'		=> $config['pay_mchid'],
+                				'nonce_str'		=> self::getNonceStr(),
+                				'body'			=> '货达',
+                				'out_trade_no'	=> 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
+                				'total_fee'		=> $printInfo['order_total_price'] * 100,
+                				'spbill_create_ip'	=> get_client_ip(),
+                				'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
+                				'trade_type'	=> 'NATIVE'
+                			);
+                			$unifiedorder['sign'] = self::makeSign($unifiedorder);
+    						//请求数据
+    						$xmldata = self::array2xml($unifiedorder);
+    						$url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+    						$res = self::curl_post_ssl($url, $xmldata);
+    						if(!$res){
+    						    exception('生成支付信息失败，请确认后重新尝试');
+    						}else{
+    						    $content = self::xml2array($res);
+    						    
+    						    if(!empty($content['prepay_id']) && !empty($content['code_url'])){
+    						        db("order")->where(['id'=>$printInfo['id']])->update(['prepay_id'=>$content['prepay_id'], 'order_number'=>$unifiedorder['out_trade_no']]);
+    						        
+    						        $value = $content['code_url'];//二维码内容
+    						        $errorCorrectionLevel = 'L';
+    						        $matrixPointSize = 5;
+    						        $filename = 'qrcode/'.$unifiedorder['out_trade_no'].'.png';
+    						        QRcode::png($value, $filename, $errorCorrectionLevel, $matrixPointSize, 2);
+
+    						        $printInfo['code_url'] = $filename;
+    						        $printData[] = $printInfo;
+    						    }else{
+    						        exception('该订单发起支付信息失败，请确认后重新尝试');
+    						    }    						    
+    						}
                         }else{
                             exception('该订单存在问题，请确认后重新尝试');
                         }
@@ -307,13 +350,6 @@ class AdminIndexController extends AdminBaseController
                     $this->error('删除失败！');
                 }
             }else{
-				$config = [
-					'appid'=>'wx5f90b077ca92b8e7',
-					'pay_mchid'=>'1517605631',
-					'pay_apikey'=>'6ba57bc32cfd5044f8710f09ff86c664'
-				];
-				$this->config = $config;
-				
                 if($this->refund($result)){
                     $data         = [
                         'object_id'   => $result['id'],
@@ -456,6 +492,41 @@ class AdminIndexController extends AdminBaseController
         $result= json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
         return $result;
     }
+
+	/**
+	 * 微信支付发起请求
+	 */
+	protected function curl_post_ssl($url, $xmldata, $second=30,$aHeader=array()){
+		$ch = curl_init();
+		//超时时间
+		curl_setopt($ch,CURLOPT_TIMEOUT,$second);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
+		//这里设置代理，如果有的话
+		//curl_setopt($ch,CURLOPT_PROXY, '10.206.30.98');
+		//curl_setopt($ch,CURLOPT_PROXYPORT, 8080);
+		curl_setopt($ch,CURLOPT_URL,$url);
+		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
+		curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
+
+
+		if( count($aHeader) >= 1 ){
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $aHeader);
+		}
+
+		curl_setopt($ch,CURLOPT_POST, 1);
+		curl_setopt($ch,CURLOPT_POSTFIELDS,$xmldata);
+		$data = curl_exec($ch);
+		if($data){
+			curl_close($ch);
+			return $data;
+		}
+		else {
+			$error = curl_errno($ch);
+			echo "call faild, errorCode:$error\n";
+			curl_close($ch);
+			return false;
+		}
+	}
 
     /**
      * 生成签名
