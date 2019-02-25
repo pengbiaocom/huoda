@@ -31,6 +31,7 @@
                 <th>带货款（元）</th>
                 <th>订单价格</th>
                 <th>预估时间（分钟）</th>
+                <th>支付状态</th>
                 <th>状态</th>
                 <th>备注信息</th>
                 <th>下单时间</th>
@@ -64,6 +65,13 @@
                     </td>
                     <td>
                         {$vo.estimate_time}
+                    </td>
+                    <td>
+                    	<eq name="vo.order_pay" value="1">
+                    	已支付
+                    	<else/>
+                    	未支付
+                    	</eq>                    
                     </td>
                     <td>
                         {:show_order_text($vo.order_status)}

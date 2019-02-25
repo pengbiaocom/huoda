@@ -255,7 +255,7 @@ class OrderController extends RestBaseController
 			$openid = $data['openid'];					//付款人openID
 			$total_fee = $data['total_fee'];			//付款金额
 			$transaction_id = $data['transaction_id']; 	//微信支付流水号
-			//db("order")->where(['order_number'=>$order_sn])->update(['order_status'=>1]);
+			db("order")->where(['order_number'=>$order_sn])->update(['order_pay'=>1]);//检测支付状态
 			
 			//删除已经支付完成的二维码（节省空间）
 			$imgsrc = 'qrcode/'.$order_sn.'.png';
