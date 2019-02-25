@@ -311,7 +311,7 @@ class AdminIndexController extends AdminBaseController
         if ($key !== false) array_splice($distributions, $key, 1);
         
         if(db('distribution')->where('id', $param['did'])->update(['distributions'=>json_encode($distributions)])){
-            db('order')->where('id',$param['id'])->update(['order_status'=>1, 'distribution'=>0]);
+            db('order')->where('id',$param['id'])->update(['order_status'=>0, 'distribution'=>0]);
             $this->success('成功取消配送');
         }else{
             $this->error('取消配送失败');

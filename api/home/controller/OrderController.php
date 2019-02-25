@@ -40,12 +40,12 @@ class OrderController extends RestBaseController
 		$where['delete_time'] = 0;
 		if($status != 'all'){
 			if($status == 1){
-				$where['order_status'] = ['in','1,2'];
+				$where['order_status'] = ['in','0,2'];
 			}else{
 				$where['order_status'] = $status;
 			}
 		}else{
-		    $where['order_status'] = ['GT', 0];
+		    $where['order_status'] = ['EGT', 0];
 		}
 
 		$list = Db::name("order")->where($where)->order('create_time desc')->limit(($page-1)*$limit, $limit)->select();
