@@ -130,7 +130,7 @@ class AdminIndexController extends AdminBaseController
                 				'mch_id'		=> $config['pay_mchid'],
                 				'nonce_str'		=> self::getNonceStr(),
                 				'body'			=> '货达',
-                				'out_trade_no'	=> 'HD'.date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),//每一次的发起支付都重新生成一下订单号，并替换数据库
+                				'out_trade_no'	=> $printInfo['order_number'],//每一次的发起支付都重新生成一下订单号，并替换数据库
                 				'total_fee'		=> $printInfo['order_total_price'] * 100,
                 				'spbill_create_ip'	=> get_client_ip(),
                 				'notify_url'	=> 'https://www.qianlishitou.com/api/home/order/notify',
@@ -147,7 +147,7 @@ class AdminIndexController extends AdminBaseController
     						    $content = self::xml2array($res);
     						    
     						    if(!empty($content['prepay_id']) && !empty($content['code_url'])){
-    						        db("order")->where(['id'=>$printInfo['id']])->update(['prepay_id'=>$content['prepay_id'], 'order_number'=>$unifiedorder['out_trade_no']]);
+    						        db("order")->where(['id'=>$printInfo['id']])->update(['prepay_id'=>$content['prepay_id']]);
     						        
     						        $value = $content['code_url'];//二维码内容
     						        $errorCorrectionLevel = 'L';
