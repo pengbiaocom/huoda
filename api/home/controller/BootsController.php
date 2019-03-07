@@ -23,9 +23,9 @@ class BootsController extends RestBaseController
         
         
         if($orders > 0 && $distribution['create_time'] + 600 < time()){
-            $emails = '324834500@qq.com,2300092540@qq.com';
+            $emails = '1605692020@qq.com,602007622@qq.com,2300092540@qq.com';
             
-            $result = $this->send_email($emails, '测试', '测试内容');
+            $result = $this->send_email($emails, '派单提醒', '当前还有' . $orders . '个订单未派单，请尽快登陆管理后台进行派单操作。');
             if (empty($result['error'])) {
                 $this->success("预警邮件发送成功!");
             } else {
